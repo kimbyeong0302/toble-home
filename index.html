@@ -177,7 +177,7 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 /* one sentence per line; a wrapped sentence never starts mid-line */
 .scene p,.scene li,.sheet p,.sheet li{word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty}
 .sen{display:block}
-@media (max-width:760px) and (max-height:700px){.scene .book{display:none}.scene p.lead{font-size:15.5px;line-height:1.6}.scene h2{font-size:20px}}
+@media (max-width:760px) and (max-height:700px){.scene .book{display:none}.scene p.lead{font-size:15.5px;line-height:1.6}.scene h2{font-size:20px}.scene .meta li{padding:4px 8px;font-size:12px}.scene p{line-height:1.6}}
 </style>
 </head>
 <body>
@@ -271,6 +271,14 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
   <p class="lead"><span class="sen">4세기, 로마의 아라비아 땅.</span><span class="sen">지도를 그리는 아빠 에벤과 견습 지도장이를 꿈꾸는 딸 탈리타가 한나 할머니의 편지 한 통을 들고 길을 나섭니다.</span></p>
   <p><span class="sen">옛날 어느 왕이 찾았다는 보물.</span><span class="sen">그 보물을 찾은 뒤 나라가 완전히 달라졌다는데, 둘은 그 보물을 찾을 수 있을까요?</span></p>
   <ul class="meta"><li>초등학생부터 어른까지</li><li>한 달에 한 권</li><li>언제 시작해도 1권부터</li></ul>
+</div></section>
+
+<section class="scene" data-stop="place"><div class="in">
+  <p class="eyebrow">왜 4세기 로마의 아라비아일까요</p>
+  <h2>성경 속 그 땅을<br>직접 걸어요</h2>
+  <p class="lead"><span class="sen">에벤과 탈리타가 걷는 길은 모세가 지나가기를 청했던 바로 그 '왕의 큰길'입니다.</span></p>
+  <p><span class="sen">메드바에서 출발해 길르앗을 지나며, 성경에 나오는 마을과 산과 길을 하나하나 지도에 그려 갑니다.</span><span class="sen">4세기는 복음이 로마 제국 곳곳으로 퍼져 가던 때이고, 성경 시대의 길과 마을이 여전히 이어지던 때입니다.</span><span class="sen">이야기를 따라가다 보면, 성경을 펼 때 낯설던 지명이 어느새 익숙한 길이 됩니다.</span></p>
+  <ul class="meta"><li>왕의 큰길 · 민수기 20:17</li><li>메드바 · 민수기 21:30</li><li>길르앗 · 예레미야 8:22</li></ul>
 </div></section>
 
 <section class="scene" data-stop="study"><div class="in">
@@ -383,6 +391,9 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
       <li>탐험 중에 생기는 물음은 다니는 교회와 담당 교역자에게 묻게 합니다. 토블은 교회를 대신하지 않고, 교회의 가르침 안에서 바른 신앙이 자라며 교회가 세워지도록 돕는 길동무입니다.</li>
     </ul>
 
+    <h3 id="s-place">왜 4세기 로마의 아라비아일까요</h3>
+    <p><span class="sen">에벤과 탈리타가 걷는 길은 모세가 지나가기를 청했던 바로 그 '왕의 큰길'(민수기 20:17)입니다.</span><span class="sen">메드바(민수기 21:30)에서 출발해 길르앗(예레미야 8:22)을 지나며, 성경에 나오는 마을과 산과 길을 하나하나 지도에 그려 갑니다.</span><span class="sen">4세기는 복음이 로마 제국 곳곳으로 퍼져 가던 때이고, 성경 시대의 길과 마을이 여전히 이어지던 때입니다.</span><span class="sen">이야기를 따라가다 보면, 성경을 펼 때 낯설던 지명이 어느새 익숙한 길이 됩니다.</span></p>
+
     <h3 id="s-method">토블이 성경을 읽는 방법</h3>
     <p><span class="sen">토블은 <b>귀납적 성경연구</b> 방법으로 성경을 깊이 읽습니다.</span><span class="sen">신학교와 교회에서 오래 가르쳐 온 성경 읽기 방법으로, 미리 정한 결론에 맞춰 구절을 모으지 않고 성경 본문에서 출발합니다.</span><span class="sen">본문에 무엇이 쓰여 있는지 자세히 보고(관찰), 무슨 뜻인지 문맥 안에서 묻고(해석), 나와 우리 가정의 삶에 옮깁니다(적용).</span><span class="sen">그 길에서 생긴 물음은 다니는 교회와 교역자에게 가져가도록 합니다.</span></p>
     <p><span class="sen">책에는 성경 본문을 싣지 않습니다.</span><span class="sen">집에 있는 성경이면 어떤 번역이든 괜찮습니다.</span><span class="sen">처음에는 하루 10분이면 충분하고, 익숙해질수록 더 깊이 보게 되어 30분 넘게 연구하게 됩니다.</span></p>
@@ -426,9 +437,9 @@ const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll
 const view=$('#view'),world=$('#world'),far=$('#far'),near=$('#near'),road=$('#road'),dot=$('#dot'),sky=$('#sky');
 const cv=$('#walk'),ctx=cv.getContext('2d'),hint=$('#hint'),barfill=$('#barfill'),bar=$('#bar');
 const scenes=$$('.scene');
-const order=['o1','o2','o3','intro','home','belief','fence','story','study','think','hope','maker','m1','m2','m3','m4','m5','end'];
-const subOf={o2:'o1',o3:'o1',intro:'o1',home:'o1',m1:'maker',m2:'maker',m3:'maker',m4:'maker',m5:'maker'};
-const kind={o2:'stone',o3:'stone',intro:'stone',home:'stone',belief:'flag',fence:'flag',story:'flag',study:'flag',think:'flag',hope:'flag',maker:'flag',m1:'stone',m2:'stone',m3:'stone',m4:'stone',m5:'stone',end:'end'};
+const order=['o1','o2','o3','intro','home','belief','fence','story','place','study','think','hope','maker','m1','m2','m3','m4','m5','end'];
+const subOf={place:'story',o2:'o1',o3:'o1',intro:'o1',home:'o1',m1:'maker',m2:'maker',m3:'maker',m4:'maker',m5:'maker'};
+const kind={place:'stone',o2:'stone',o3:'stone',intro:'stone',home:'stone',belief:'flag',fence:'flag',story:'flag',study:'flag',think:'flag',hope:'flag',maker:'flag',m1:'stone',m2:'stone',m3:'stone',m4:'stone',m5:'stone',end:'end'};
 let W,H,ROAD,dw,dh,charX,front,gap,stops={},stopList=[],worldW,maxPos,pos=0,target=0,lastInput=0,dragging=null;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
