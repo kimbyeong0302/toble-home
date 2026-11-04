@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>토블: 성경을 톺아보다</title>
+<meta name="description" content="스스로 성경을 펴고 톺아보며, 말씀 안에서 하나님을 만나는 길. 토블은 그 여정에 교회와 가정의 동역자가 되고자 합니다.">
+<meta name="theme-color" content="#fafaf5">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://toble.kr/">
+<meta property="og:title" content="토블: 성경을 톺아보다">
+<meta property="og:description" content="한 사람이 말씀 위에 세워지기까지. 토블은 그 여정에 교회와 가정의 동역자가 되고자 합니다.">
+<meta property="og:image" content="https://toble.kr/assets/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Serif+KR:wght@400;500&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+Hebrew:wght@500;700&display=swap">
+<style>
+/* Layout: a side-scrolling road. The camera follows Eben, Talitha and Philo; scenes rise above the road as they reach each flag.
+   Single deliberate light look: clean paper with an olive accent. */
+:root{
+  color-scheme:light;
+  --paper:#fafaf5;
+  --ink:#24251f;
+  --soft:#5b5c52;
+  --muted:#8b8c80;
+  --olive:#5f6d2c;
+  --olive-2:#8a9653;
+  --olive-wash:#e7ead9;
+  --hill-far:#e9ebdf;
+  --hill-near:#dde2c9;
+  --line:#e2e2d8;
+  --display:"Gowun Batang","Nanum Myeongjo","Apple SD Gothic Neo",serif;
+  --body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--paper);z-index:30}
+
+#sky{position:fixed;inset:0;pointer-events:none;transition:background .4s linear}
+#view{position:fixed;inset:0;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#view.drag{cursor:grabbing}
+.layer{position:absolute;left:0;bottom:0;will-change:transform}
+.layer svg{display:block}
+#roadwrap{position:absolute;left:0;right:0;bottom:var(--road);height:2px}
+#road{position:absolute;left:0;top:0;height:2px;background:repeating-linear-gradient(90deg,var(--olive-2) 0 9px,transparent 9px 20px);will-change:transform}
+#ground{position:absolute;left:0;right:0;bottom:0;height:var(--road);background:linear-gradient(var(--olive-wash),var(--paper) 70%)}
+#dot{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--olive);bottom:calc(var(--road) - 5px);margin-left:-6px}
+#dot::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:1px solid var(--olive-2);opacity:.5;animation:ring 2.4s ease-out infinite}
+@keyframes ring{from{transform:scale(.6);opacity:.6}to{transform:scale(1.6);opacity:0}}
+
+.marker{position:absolute;bottom:calc(var(--road) - 4px);pointer-events:none}
+.marker svg{display:block;overflow:visible}
+.marker canvas.cloth{position:absolute;left:0;top:0;pointer-events:none}
+@keyframes wave{0%,100%{transform:none}35%{transform:skewY(3deg) scaleX(.96)}70%{transform:skewY(-2deg) scaleX(.98)}}
+.marker.stone{bottom:var(--road)}
+.stone i{display:block;border-radius:50%;background:var(--olive-2);margin:0 auto}
+.stone i:nth-child(1){width:12px;height:9px;opacity:.75}
+.stone i:nth-child(2){width:18px;height:11px;margin-top:-2px;opacity:.85}
+.stone i:nth-child(3){width:26px;height:13px;margin-top:-3px}
+
+canvas#walk{position:absolute;pointer-events:none;bottom:calc(var(--road) - var(--foot))}
+
+/* top bar */
+header{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:baseline;gap:10px;color:var(--ink);text-decoration:none;font-family:var(--display)}
+.brand b{font-size:22px;font-weight:700;letter-spacing:.02em}
+.brand span{font-size:13px;color:var(--muted)}
+nav{display:flex;gap:4px;align-items:center}
+nav button{font:500 13px/1 var(--body);color:var(--soft);background:none;border:0;padding:9px 11px;border-radius:999px;cursor:pointer}
+nav button[aria-current="true"]{color:var(--olive);background:var(--olive-wash)}
+nav button:focus-visible,.btn:focus-visible,.close:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
+nav .all{color:var(--olive);border:1px solid var(--olive-2)}
+
+/* scenes */
+.scene{position:fixed;z-index:10;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 78px);bottom:var(--sb);display:flex;align-items:center;pointer-events:none;opacity:0;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.scene .in{width:min(580px,calc(100% - var(--sx)));margin-left:var(--sx);pointer-events:auto;touch-action:none}
+.scene .in > *{transform:translateY(calc(var(--k,0) * 14px));transition:none}
+.eyebrow{font:500 12px/1.4 var(--body);letter-spacing:.14em;color:var(--olive);margin:0 0 12px}
+.scene h1,.scene h2{font-family:var(--display);font-weight:700;color:var(--ink);text-wrap:balance;margin:0 0 14px}
+.scene h1{font-size:clamp(30px,4.6vw,52px);line-height:1.25}
+.scene h2{font-size:clamp(24px,3.2vw,36px);line-height:1.3}
+.scene p{font-size:clamp(14px,1.35vw,16px);line-height:1.8;color:var(--soft);margin:0 0 10px;max-width:34em}
+.scene p.lead{font-family:var(--display);font-size:clamp(17px,1.8vw,21px);line-height:1.7;color:var(--ink)}
+.creed{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border:1px solid var(--olive-2);border-radius:999px;font:500 14px/1 var(--body);color:var(--olive);margin-bottom:14px}
+.creed::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--olive)}
+ul.vows{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px}
+ul.vows li{font-size:clamp(14px,1.3vw,15.5px);line-height:1.6;color:var(--ink);padding-left:18px;position:relative}
+ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:2px;background:var(--olive)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:500 14px/1 var(--body);padding:12px 18px;border-radius:999px;border:1px solid var(--olive);color:var(--olive);background:var(--paper);cursor:pointer;text-decoration:none}
+.btn.solid{background:var(--olive);color:var(--paper)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 0}
+.tools span{font-size:13px;padding:6px 10px;border-radius:6px;background:var(--olive-wash);color:var(--olive)}
+.steps{list-style:none;display:flex;gap:0;margin:4px 0 16px;padding:0;counter-reset:st}
+.steps li{flex:1;min-width:0;position:relative;padding:10px 12px 10px 0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.steps li b{display:block;font-family:var(--display);font-size:18px;color:var(--olive);margin-bottom:2px}
+.steps li + li{padding-left:16px;border-left:1px solid var(--line)}
+.tl{display:grid;gap:8px;margin:2px 0 14px}
+.tl div{display:grid;grid-template-columns:5.6em 1fr;gap:10px;align-items:baseline}
+.tl dt{font-size:13px;font-weight:500;color:var(--olive);background:var(--olive-wash);border-radius:6px;padding:5px 8px;text-align:center}
+.tl dd{margin:0;font-size:clamp(13.5px,1.3vw,15px);line-height:1.6;color:var(--ink);min-width:0}
+.meta{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0;padding:0}
+.meta li{font-size:13px;line-height:1.3;padding:6px 10px;border-radius:999px;border:1px solid var(--line);color:var(--soft);background:var(--paper)}
+.def{font-size:13px!important;color:var(--muted)!important;margin-top:4px!important}
+.def b{font-family:var(--display);color:var(--olive);font-weight:700;margin-right:8px}
+.book{display:flex;gap:0;margin:6px 0 16px;perspective:900px}
+.spread{display:flex;margin-right:14px}
+.pg{width:clamp(44px,5.4vw,64px);aspect-ratio:3/4;background:var(--paper);border:1px solid var(--line);display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;box-sizing:border-box;font-size:11px;color:var(--muted);transform-origin:left center}
+.pg.st{background:#f3f4ea}
+.pg.ex{background:#eef1e2;color:var(--olive)}
+.pg + .pg{border-left:0}
+.pg i{display:block;width:60%;height:2px;background:var(--line);margin:3px auto;font-style:normal}
+.pg .lines{position:absolute}
+.sig{font-family:var(--display);font-size:15px;color:var(--ink);margin-top:6px}
+.sig small{display:block;font-family:var(--body);font-size:12.5px;color:var(--muted);margin-top:4px}
+.quote{font-family:var(--display);font-size:clamp(18px,2vw,24px);line-height:1.7;color:var(--ink);margin:0 0 10px;text-wrap:pretty}
+
+/* hint + progress */
+.hint{position:fixed;z-index:12;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 46px);text-align:center;font-size:13px;color:var(--muted);pointer-events:none;transition:opacity .5s}
+.hint b{color:var(--olive);font-weight:500}
+.bar{position:fixed;z-index:12;left:max(24px,env(safe-area-inset-left,0px));right:max(24px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 22px);height:2px;background:var(--line)}
+.bar i{display:block;height:100%;width:0;background:var(--olive)}
+.bar s{position:absolute;top:-3px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--paper);border:1px solid var(--olive-2);text-decoration:none}
+
+/* sheet */
+.sheet{position:fixed;inset:0;z-index:40;display:flex;justify-content:flex-end;background:rgba(36,37,31,.28)}
+.sheet[hidden]{display:none!important}
+.sheet .panel{width:min(560px,100%);height:100%;overflow-y:auto;background:var(--paper);box-sizing:border-box;padding-block:calc(env(safe-area-inset-top,0px) + 28px) calc(env(safe-area-inset-bottom,0px) + 40px);padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px));touch-action:pan-y;user-select:text;-webkit-user-select:text}
+.sheet h3{font-family:var(--display);font-size:24px;margin:34px 0 12px;text-wrap:balance}
+.sheet h3:first-of-type{margin-top:10px}
+.sheet p,.sheet li{font-size:15px;line-height:1.85;color:var(--soft)}
+.sheet ul{padding-left:18px}
+.sheet .creedtext{font-family:var(--display);font-size:16.5px;line-height:1.95;color:var(--ink)}
+.sheet small{color:var(--muted);font-size:12.5px}
+.close{position:sticky;top:0;float:right;font:500 14px var(--body);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:9px 14px;cursor:pointer;color:var(--soft)}
+.ph{display:inline-block;font-size:12px;color:var(--muted);border:1px dashed var(--muted);border-radius:6px;padding:4px 8px;margin-top:6px}
+
+@media (max-width:760px){
+  nav button:not(.all){display:none}
+  .brand span{display:none}
+  .scene{top:calc(env(safe-area-inset-top,0px) + 64px)}
+  .scene .in{margin-left:0}
+  ul.vows{gap:4px;margin-bottom:12px}
+  ul.vows li{font-size:13.5px;line-height:1.55}
+  .creed{margin-bottom:10px;padding:6px 12px;font-size:13px}
+  .scene h2{font-size:22px}
+  .eyebrow{margin-bottom:8px}
+  .pg{width:34px;font-size:10px}
+  .book{margin:0 0 10px}
+  .steps{margin:0 0 12px}
+  .steps li{padding-block:6px}
+  .scene h2{margin-bottom:10px}
+  .scene{top:calc(env(safe-area-inset-top,0px) + 72px)}
+}
+@media (max-height:640px){
+  .scene p{font-size:13.5px;line-height:1.65}
+  ul.vows li{font-size:13.5px}
+}
+@media (prefers-reduced-motion:reduce){#dot::after{animation:none}}
+
+
+.scene.word .in{text-align:left;width:min(760px,calc(100% - var(--sx)))}
+.verse-big br.mb{display:none}
+@media (max-width:760px){.verse-big br.mb{display:inline}}
+.verse-big{font-family:"Noto Serif KR",var(--display);font-weight:400;font-size:clamp(22px,2.3vw,34px)!important;line-height:1.75!important;color:var(--ink)!important;margin:0 0 14px!important;max-width:none!important;word-break:keep-all}
+.verse-big .good{position:relative;white-space:nowrap}
+.verse-big .good::after{content:"";position:absolute;left:0;right:0;bottom:-.08em;height:2px;background:var(--olive);transform-origin:left;transform:scaleX(var(--u,1))}
+.ref{font:400 13px/1.4 var(--body)!important;letter-spacing:.18em;color:var(--muted)!important;margin:0!important}
+.tov{font-family:"Noto Serif Hebrew","Times New Roman",serif;font-weight:500;font-size:clamp(88px,15vw,160px)!important;line-height:1!important;color:var(--olive)!important;margin:0 0 12px!important;direction:rtl;text-align:left}
+.tov-gloss{font-family:"Noto Serif KR",var(--display);font-size:clamp(20px,2.6vw,28px)!important;color:var(--ink)!important;margin:0 0 14px!important;letter-spacing:.08em}
+.toppa{font-family:"Noto Serif KR",var(--display);font-weight:500;font-size:clamp(34px,6vw,64px)!important;line-height:1.3!important;color:var(--ink)!important;margin:0!important;max-width:none!important}
+.toppa span{color:var(--olive)}
+
+/* one sentence per line; a wrapped sentence never starts mid-line */
+.scene p,.scene li,.sheet p,.sheet li{word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty}
+.sen{display:block}
+@media (max-width:760px) and (max-height:700px){.scene .book{display:none}.scene p.lead{font-size:15.5px;line-height:1.6}.scene h2{font-size:20px}}
+</style>
+</head>
+<body>
+
+<div id="sky"></div>
+<div id="view" aria-label="토블 이야기 길">
+  <div class="layer" id="far"></div>
+  <div class="layer" id="near"></div>
+  <div id="ground"></div>
+  <div class="layer" id="world">
+    <div id="dot"></div>
+    <div id="roadwrap"><div id="road"></div></div>
+  </div>
+  <canvas id="walk" aria-hidden="true"></canvas>
+</div>
+
+<header>
+  <a class="brand" href="#" id="home" aria-label="토블 처음으로"><b>토블</b><span>성경을 톺아보다</span></a>
+  <nav aria-label="장면 바로가기">
+    <button data-go="belief">믿는 것</button>
+    <button data-go="fence">울타리</button>
+    <button data-go="story">이야기</button>
+    <button data-go="study">연구 방법</button>
+    <button data-go="think">생각하는 힘</button>
+    <button data-go="hope">바라는 것</button>
+    <button data-go="maker">만든 사람</button>
+    <button class="all" id="openAll">전체 내용</button>
+  </nav>
+</header>
+
+<!-- scenes: data-stop names the stop they belong to -->
+<section class="scene word" data-stop="o1"><div class="in">
+  <p class="verse-big">하나님이 지으신<br class="mb"> 그 모든 것을 보시니<br>보시기에 심히 <span class="good">좋았더라</span></p>
+  <p class="ref">창세기 1:31</p>
+</div></section>
+
+<section class="scene word" data-stop="o2"><div class="in">
+  <p class="tov" lang="he">טוֹב</p>
+  <p class="tov-gloss">토브 · 좋은</p>
+  <p class="ref">보시기에 심히 좋았더라</p>
+</div></section>
+
+<section class="scene word" data-stop="o3"><div class="in">
+  <p class="toppa">성경을 <span>톺</span>아보다</p>
+</div></section>
+
+<section class="scene" data-stop="intro"><div class="in">
+  <p class="eyebrow">토블 · 성경을 톺아보다</p>
+  <h1>한 사람이<br>말씀 위에 세워지기까지</h1>
+  <p class="lead"><span class="sen">스스로 성경을 펴고 톺아보며, 말씀 안에서 하나님을 만나 깊이 사랑하는 사람으로 세워지는 길.</span><span class="sen">토블은 그 여정에 교회와 가정의 동역자가 되고자 합니다.</span></p>
+  <p class="def"><b>톺아보다</b> 샅샅이 더듬어 가며 살피다</p>
+</div></section>
+
+<section class="scene" data-stop="home"><div class="in">
+  <p class="eyebrow">토블이 있는 이유</p>
+  <h2>신앙의 출발은<br>가정입니다</h2>
+  <p class="lead">토블은 가정에서 부모와 자녀가 한 신앙 안에서 서로의 좋은 동역자가 되기를 소망합니다.</p>
+  <p><span class="sen">함께 성경을 펴고, 함께 묻고, 함께 하나님을 알아 가는 가정.</span><span class="sen">그런 가정이 모여 교회를 세웁니다.</span></p>
+</div></section>
+
+<section class="scene" data-stop="belief"><div class="in">
+  <p class="eyebrow">첫째 깃발 · 토블이 믿는 것</p>
+  <h2>온 교회가 함께 고백해 온<br>믿음 위에 섭니다</h2>
+  <div class="creed">사도신경을 고백합니다</div>
+  <ul class="vows">
+    <li>성경 66권은 하나님의 감동으로 기록된, 오류가 없는 하나님의 말씀이며 신앙과 삶의 최종 권위입니다</li>
+    <li>한 분 하나님은 성부, 성자, 성령 삼위로 계십니다</li>
+    <li>예수 그리스도는 참 하나님이시며 참 사람이시고, 유일한 구원자이십니다</li>
+    <li>사람은 오직 은혜로, 그리스도를 믿음으로 구원받습니다</li>
+    <li>교회는 그리스도의 몸이며, 모든 가정은 지역 교회 안에서 자랍니다</li>
+  </ul>
+  <button class="btn" data-sheet="vows">사도신경 전문 보기</button>
+</div></section>
+
+<section class="scene" data-stop="fence"><div class="in">
+  <p class="eyebrow">둘째 깃발 · 울타리와 목적</p>
+  <h2>그리스도와 복음을 향해,<br>안전한 울타리 안에서</h2>
+  <ul class="vows">
+    <li>이 탐험이 향하는 곳은 예수 그리스도와 그분의 복음입니다</li>
+    <li>답을 대신 주지 않고, 스스로 찾게 합니다</li>
+    <li>문맥은 같은 책 안에서 살피고, 다른 구절을 끌어와 끼워 맞추지 않습니다</li>
+    <li>출처가 분명한 주석과 연구서만 참고하고, 이단 단체의 자료는 쓰지 않습니다</li>
+    <li>탐험 중 생기는 물음은 다니는 교회와 담당 교역자에게 묻게 합니다</li>
+  </ul>
+  <button class="btn" data-sheet="promise">토블이 지키는 약속 여덟 가지 보기</button>
+</div></section>
+
+<section class="scene" data-stop="story"><div class="in">
+  <p class="eyebrow">셋째 깃발 · 에벤과 탈리타의 모험</p>
+  <h2>한 통의 편지에서 시작되는 여행</h2>
+  <p class="lead"><span class="sen">4세기, 로마의 아라비아 땅.</span><span class="sen">지도를 그리는 아빠 에벤과 견습 지도장이를 꿈꾸는 딸 탈리타가 한나 할머니의 편지 한 통을 들고 길을 나섭니다.</span></p>
+  <p><span class="sen">옛날 어느 왕이 찾았다는 보물.</span><span class="sen">그 보물을 찾은 뒤 나라가 완전히 달라졌다는데, 둘은 그 보물을 찾을 수 있을까요?</span></p>
+  <ul class="meta"><li>초등학생부터 어른까지</li><li>한 달에 한 권</li><li>언제 시작해도 1권부터</li></ul>
+</div></section>
+
+<section class="scene" data-stop="study"><div class="in">
+  <p class="eyebrow">넷째 깃발 · 이야기와 함께 성경을 연구해요</p>
+  <h2>이야기가 멈추면,<br>우리가 성경을 펴요</h2>
+  <div class="book" aria-hidden="true">
+    <div class="spread"><div class="pg st">이야기</div><div class="pg st">이야기</div></div>
+    <div class="spread"><div class="pg ex">탐험</div><div class="pg ex">탐험</div></div>
+  </div>
+  <p><span class="sen">하루 네 쪽.</span><span class="sen">이야기가 멈추면 탐험 쪽에서 자기 성경을 펴고, 귀납적 성경연구의 세 걸음을 따라 걸어요.</span></p>
+  <ol class="steps" aria-label="귀납적 성경연구의 세 걸음"><li><b>관찰</b>무엇이 쓰여 있나</li><li><b>해석</b>무슨 뜻인가</li><li><b>적용</b>어떻게 살까</li></ol>
+  <ul class="meta"><li>처음엔 하루 10분, 익숙해지면 30분 넘게 깊이</li><li>집에 있는 성경 그대로</li></ul>
+</div></section>
+
+<section class="scene" data-stop="think"><div class="in">
+  <p class="eyebrow">다섯째 깃발 · AI 시대에 더 귀한 것</p>
+  <h2>답을 묻는 시대,<br>스스로 묻는 사람으로</h2>
+  <p class="lead"><span class="sen">무엇이든 AI에게 물으면 곧바로 답이 나오는 시대입니다.</span><span class="sen">그래서 더 귀해진 것은 스스로 생각하고, 묻고, 오래 붙들고 씨름하는 힘입니다.</span></p>
+  <ul class="vows">
+    <li>화면을 잠시 내려놓고, 종이책과 성경을 펴서 한 본문에 오래 머뭅니다</li>
+    <li>정답을 건네받지 않고, 스스로 관찰하고 질문을 세웁니다</li>
+    <li>왜 그렇게 읽었는지, 그 근거를 본문에서 찾아 말하는 힘을 기릅니다</li>
+    <li>날마다 조금씩, 깊이 생각하는 훈련이 쌓여 갑니다</li>
+  </ul>
+</div></section>
+
+<section class="scene" data-stop="hope"><div class="in">
+  <p class="eyebrow">여섯째 깃발 · 바라는 열매</p>
+  <h2>이 길을 걸으며 바라는 것</h2>
+  <ul class="vows">
+    <li>아이가 누가 시키지 않아도 스스로 성경을 펴고 묻습니다</li>
+    <li>정답을 외우는 대신, 본문을 바르게 읽는 눈이 자랍니다</li>
+    <li>부모와 아이 사이에 말씀으로 나누는 대화가 생깁니다</li>
+    <li>가정에서 시작된 물음이 교회 안에서 자라, 교회를 함께 세웁니다</li>
+    <li>무엇보다, 말씀 안에서 하나님을 만나 깊이 사랑하게 됩니다</li>
+  </ul>
+</div></section>
+
+<section class="scene" data-stop="maker"><div class="in">
+  <p class="eyebrow">일곱째 깃발 · 만든 사람</p>
+  <h2>이 길을 먼저 걸어 본<br>한 사람의 이야기</h2>
+  <div class="sig">김병호<small>기독교대한성결교회</small></div>
+</div></section>
+
+<section class="scene" data-stop="m1"><div class="in">
+  <p class="eyebrow">손을 잡고</p>
+  <p class="quote"><span class="sen">어린 시절, 부모님 손을 잡고 처음 교회 문을 들어섰습니다.</span><span class="sen">부모님도 막 신앙을 시작하신 때였습니다.</span></p>
+</div></section>
+<section class="scene" data-stop="m2"><div class="in">
+  <p class="eyebrow">지루한 책</p>
+  <p class="quote"><span class="sen">부모님은 저를 말씀 안에서 기르고 싶으셨지만, 무엇을 어떻게 가르쳐야 할지 모르셨습니다.</span><span class="sen">그래서 "성경 읽어라"가 전부였고, 어린 제게 성경은 그저 지루한 책이었습니다.</span></p>
+</div></section>
+<section class="scene" data-stop="m3"><div class="in">
+  <p class="eyebrow">아버지의 음성</p>
+  <p class="quote"><span class="sen">어른이 되어 예수님을 인격적으로 만났습니다.</span><span class="sen">다시 펼친 성경에는 살아 계신 하나님의 말씀이 가득했습니다.</span><span class="sen">성경은 더 이상 지루한 책이 아니라 사랑하시는 아버지의 음성이었습니다.</span></p>
+</div></section>
+<section class="scene" data-stop="m4"><div class="in">
+  <p class="eyebrow">자녀를 기다리며</p>
+  <p class="quote"><span class="sen">은혜로 가정을 이루고 자녀를 기다리며 깨달았습니다.</span><span class="sen">가장 먼저 해야 할 일은 우리 집에 바른 교회가 세워지는 것, 그리고 아이를 하나님의 말씀 위에서 기르는 것이라는 것을.</span></p>
+</div></section>
+<section class="scene" data-stop="m5"><div class="in">
+  <p class="eyebrow">그래서, 토블</p>
+  <p class="quote"><span class="sen">우리 아이는 "읽어라"는 말만 듣고 자라지 않기를.</span><span class="sen">말씀 안에 숨겨진 보화를 스스로 발견하고, 깊은 우물에서 직접 길어 마시는 사람으로 자라기를.</span><span class="sen">그 마음으로 토블을 만들었습니다.</span></p>
+</div></section>
+
+<section class="scene" data-stop="end"><div class="in">
+  <p class="eyebrow">길 끝에서</p>
+  <h2>이 길은 혼자 걷는 길이 아닙니다</h2>
+  <p><span class="sen">탐험하다 생기는 물음은 섬기는 교회와 교역자님께 가져가 주세요.</span><span class="sen">토블이 바라는 것은 교회 밖의 또 다른 가르침이 아니라, 각 가정이 교회 안에서 바르게 자라 교회를 함께 세워 가는 것입니다.</span></p>
+  <div class="row" style="margin-top:14px">
+    <button class="btn solid" data-sheet="parents">부모님께</button>
+    <button class="btn" data-sheet="pastors">교역자님께</button>
+  </div>
+</div></section>
+
+<div class="hint" id="hint">아래로 스크롤하거나 <b>옆으로 밀어</b> 길을 따라가 보세요</div>
+<div class="bar" id="bar"><i id="barfill"></i></div>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="토블 전체 내용">
+  <div class="panel" id="sheetPanel">
+    <button class="close" id="closeSheet">닫기</button>
+
+    <h3 id="s-why">토블이 있는 이유</h3>
+    <p><span class="sen">스스로 성경을 펴고 톺아보며, 말씀 안에서 하나님을 만나 깊이 사랑하는 사람으로 세워지는 길.</span><span class="sen">토블은 그 여정에 교회와 가정의 동역자가 되고자 합니다.</span></p>
+    <p><span class="sen">신앙의 출발은 가정입니다.</span><span class="sen">토블은 가정에서 부모와 자녀가 한 신앙 안에서 서로의 좋은 동역자가 되기를 소망합니다.</span><span class="sen">함께 성경을 펴고, 함께 묻고, 함께 하나님을 알아 가는 가정이 모여 교회를 세웁니다.</span></p>
+
+    <h3 id="s-vows">우리가 고백하는 것</h3>
+    <p>토블은 온 교회가 함께 고백해 온 사도신경을 신앙의 기둥으로 삼습니다.</p>
+    <p class="creedtext"><span class="sen">나는 전능하신 아버지 하나님, 천지의 창조주를 믿습니다.</span><span class="sen">나는 그의 유일하신 아들, 우리 주 예수 그리스도를 믿습니다.</span><span class="sen">그는 성령으로 잉태되어 동정녀 마리아에게서 나시고, 본디오 빌라도에게 고난을 받아 십자가에 못 박혀 죽으시고, 장사된 지 사흘 만에 죽은 자들 가운데서 다시 살아나셨으며, 하늘에 오르시어 전능하신 아버지 하나님 우편에 앉아 계시다가, 거기로부터 살아 있는 자와 죽은 자를 심판하러 오십니다.</span><span class="sen">나는 성령을 믿으며, 거룩한 공교회와 성도의 교제와 죄를 용서받는 것과 몸의 부활과 영원한 삶을 믿습니다.</span><span class="sen">아멘.</span></p>
+    <small>사도신경 새번역</small>
+
+    <h3>토블이 믿는 것</h3>
+    <ul>
+      <li>성경 66권은 하나님의 감동으로 기록된, 오류가 없는 하나님의 말씀이며, 신앙과 삶의 최종 권위입니다.</li>
+      <li>한 분 하나님은 성부, 성자, 성령 삼위로 계십니다.</li>
+      <li>예수 그리스도는 참 하나님이시며 참 사람이시고, 유일한 구원자이십니다.</li>
+      <li>사람은 오직 은혜로, 그리스도를 믿음으로 구원받습니다.</li>
+      <li>교회는 그리스도의 몸이며, 모든 가정은 지역 교회 안에서 자랍니다.</li>
+    </ul>
+
+    <h3 id="s-promise">토블이 지키는 약속</h3>
+    <ul>
+      <li>이 탐험이 향하는 곳은 예수 그리스도와 그분의 복음입니다.</li>
+      <li>답을 대신 주지 않고, 스스로 찾게 합니다.</li>
+      <li>성경 본문을 싣지 않고, 각자 자기 성경을 펴게 합니다.</li>
+      <li>문맥은 같은 책 안에서 살피고, 다른 구절을 끌어와 끼워 맞추지 않습니다.</li>
+      <li>부모는 가르치는 선생이 아니라 함께 찾는 동행자입니다.</li>
+      <li>관찰하고 뜻을 살핀 뒤에야 삶에 적용합니다.</li>
+      <li>출처가 분명한 주석과 연구서만 참고하고, 이단 단체의 자료는 쓰지 않습니다.</li>
+      <li>탐험 중에 생기는 물음은 다니는 교회와 담당 교역자에게 묻게 합니다. 토블은 교회를 대신하지 않고, 교회의 가르침 안에서 바른 신앙이 자라며 교회가 세워지도록 돕는 길동무입니다.</li>
+    </ul>
+
+    <h3 id="s-method">토블이 성경을 읽는 방법</h3>
+    <p><span class="sen">토블은 <b>귀납적 성경연구</b> 방법으로 성경을 깊이 읽습니다.</span><span class="sen">신학교와 교회에서 오래 가르쳐 온 성경 읽기 방법으로, 미리 정한 결론에 맞춰 구절을 모으지 않고 성경 본문에서 출발합니다.</span><span class="sen">본문에 무엇이 쓰여 있는지 자세히 보고(관찰), 무슨 뜻인지 문맥 안에서 묻고(해석), 나와 우리 가정의 삶에 옮깁니다(적용).</span><span class="sen">그 길에서 생긴 물음은 다니는 교회와 교역자에게 가져가도록 합니다.</span></p>
+    <p><span class="sen">책에는 성경 본문을 싣지 않습니다.</span><span class="sen">집에 있는 성경이면 어떤 번역이든 괜찮습니다.</span><span class="sen">처음에는 하루 10분이면 충분하고, 익숙해질수록 더 깊이 보게 되어 30분 넘게 연구하게 됩니다.</span></p>
+    <small>이 방법을 더 알고 싶다면: David R. Bauer · Robert A. Traina, <i>Inductive Bible Study: A Comprehensive Guide to the Practice of Hermeneutics</i> (Baker Academic, 2011); Howard G. Hendricks · William D. Hendricks, <i>Living by the Book</i> (Moody Publishers)</small>
+
+    <h3 id="s-think">AI 시대에 더 귀한 것</h3>
+    <p><span class="sen">무엇이든 AI에게 물으면 곧바로 답이 나오는 시대입니다.</span><span class="sen">그래서 더 귀해진 것은 스스로 생각하고, 묻고, 오래 붙들고 씨름하는 힘입니다.</span><span class="sen">토블은 화면을 잠시 내려놓고 종이책과 성경을 펴서 한 본문에 오래 머무는 시간을 만듭니다.</span><span class="sen">정답을 건네받는 대신 스스로 관찰하고 질문을 세우며, 왜 그렇게 읽었는지 그 근거를 본문에서 찾아 말하는 힘을 기릅니다.</span><span class="sen">날마다 조금씩 쌓이는 이 훈련이 깊이 생각하는 사람을 길러 냅니다.</span></p>
+
+    <h3 id="s-hope">이 길을 걸으며 바라는 것</h3>
+    <ul>
+      <li>아이가 누가 시키지 않아도 스스로 성경을 펴고 묻습니다.</li>
+      <li>정답을 외우는 대신, 본문을 바르게 읽는 눈이 자랍니다.</li>
+      <li>부모와 아이 사이에 말씀으로 나누는 대화가 생깁니다.</li>
+      <li>가정에서 시작된 물음이 교회 안에서 자라, 교회를 함께 세웁니다.</li>
+      <li>무엇보다, 말씀 안에서 하나님을 만나 깊이 사랑하게 됩니다.</li>
+    </ul>
+
+    <h3 id="s-maker">만든 사람의 마음</h3>
+    <p><span class="sen">어린 시절, 부모님 손을 잡고 처음 교회 문을 들어섰습니다.</span><span class="sen">부모님도 막 신앙을 시작하신 때였습니다.</span><span class="sen">부모님은 저를 말씀 안에서 기르고 싶으셨지만, 무엇을 어떻게 가르쳐야 할지 모르셨습니다.</span><span class="sen">그래서 "성경 읽어라"가 전부였고, 어린 제게 성경은 그저 지루한 책이었습니다.</span></p>
+    <p><span class="sen">어른이 되어 예수님을 인격적으로 만났습니다.</span><span class="sen">다시 펼친 성경에는 살아 계신 하나님의 말씀이 가득했습니다.</span><span class="sen">지금도 말씀하시는 하나님을, 말씀에 순종하며 경험했습니다.</span><span class="sen">성경은 더 이상 지루한 책이 아니라 사랑하시는 아버지의 음성이었습니다.</span></p>
+    <p><span class="sen">은혜로 가정을 이루고 자녀를 기다리며 깨달았습니다.</span><span class="sen">가장 먼저 해야 할 일은 우리 집에 바른 교회가 세워지는 것, 그리고 아이를 하나님의 말씀 위에서 기르는 것이라는 것을.</span></p>
+    <p><span class="sen">우리 아이는 "읽어라"는 말만 듣고 자라지 않기를.</span><span class="sen">말씀 안에 숨겨진 보화를 스스로 발견하고, 깊은 우물에서 직접 길어 마시는 사람으로 자라기를.</span><span class="sen">그 마음으로 토블을 만들었습니다.</span></p>
+    <p><span class="sen">그리고 이 길은 혼자 걷는 길이 아닙니다.</span><span class="sen">탐험하다 생기는 물음은 섬기는 교회와 교역자님께 가져가 주세요.</span><span class="sen">토블이 바라는 것은 교회 밖의 또 다른 가르침이 아니라, 각 가정이 교회 안에서 바르게 자라 교회를 함께 세워 가는 것입니다.</span></p>
+    <p class="sig">김병호<small>기독교대한성결교회</small></p>
+
+    <h3 id="s-parents">부모님께</h3>
+    <p><span class="sen">성경을 가르칠 자신이 없어도 괜찮아요.</span><span class="sen">정답을 확인하는 책이 아니라서, 부모도 아이와 같이 처음부터 찾아가면 됩니다.</span><span class="sen">지금 시범 운영 가정을 모집하고 있어요.</span><span class="sen">1권 앞 2주치를 먼저 받아 써 보시고, 소감을 나눠 주시면 1권 전체 인쇄본을 보내 드립니다.</span></p>
+    <span class="ph">시범 가정 신청서 링크 연결 예정</span>
+
+    <h3 id="s-pastors">교역자님께</h3>
+    <p><span class="sen">토블은 교회를 대신하지 않고, 교회의 가르침 안에서 가정의 신앙을 돕는 교재입니다.</span><span class="sen">교회학교나 가정 예배와 함께 쓸 수 있도록 교회 단위 시범 운영을 함께할 교회를 찾고 있습니다.</span></p>
+    <span class="ph">교회 시범 운영 문의 연결 예정</span>
+  </div>
+</div>
+
+<script>
+(function(){
+const FW=610,FH=342,COLS=5,N=50;
+const sprite=new Image(); sprite.src="assets/walk.webp";
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const view=$('#view'),world=$('#world'),far=$('#far'),near=$('#near'),road=$('#road'),dot=$('#dot'),sky=$('#sky');
+const cv=$('#walk'),ctx=cv.getContext('2d'),hint=$('#hint'),barfill=$('#barfill'),bar=$('#bar');
+const scenes=$$('.scene');
+const order=['o1','o2','o3','intro','home','belief','fence','story','study','think','hope','maker','m1','m2','m3','m4','m5','end'];
+const subOf={o2:'o1',o3:'o1',intro:'o1',home:'o1',m1:'maker',m2:'maker',m3:'maker',m4:'maker',m5:'maker'};
+const kind={o2:'stone',o3:'stone',intro:'stone',home:'stone',belief:'flag',fence:'flag',story:'flag',study:'flag',think:'flag',hope:'flag',maker:'flag',m1:'stone',m2:'stone',m3:'stone',m4:'stone',m5:'stone',end:'end'};
+let W,H,ROAD,dw,dh,charX,front,gap,stops={},stopList=[],worldW,maxPos,pos=0,target=0,lastInput=0,dragging=null;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+
+function hillPath(width,height,amp,seed,step){
+  let d='M0 '+height+' L0 '+(height-amp*0.6);
+  for(let x=0;x<=width+step;x+=step){
+    const y=height-amp*(0.55+0.25*Math.sin(x*0.0021+seed)+0.15*Math.sin(x*0.0057+seed*2.3)+0.05*Math.sin(x*0.013+seed));
+    d+=' L'+x.toFixed(0)+' '+y.toFixed(1);
+  }
+  return d+' L'+(width+step)+' '+height+' Z';
+}
+function trees(width,height,seed,count,color){
+  let s='';
+  for(let i=0;i<count;i++){
+    const x=((Math.sin(i*12.9898+seed)*43758.5453)%1+1)%1*width;
+    const r=10+((Math.sin(i*78.233+seed)*12345.6789)%1+1)%1*10;
+    s+='<ellipse cx="'+x.toFixed(0)+'" cy="'+(height-6-r*0.4).toFixed(0)+'" rx="'+r.toFixed(0)+'" ry="'+(r*0.72).toFixed(0)+'" fill="'+color+'"/>';
+    s+='<rect x="'+(x-1).toFixed(0)+'" y="'+(height-8).toFixed(0)+'" width="2" height="8" fill="'+color+'"/>';
+  }
+  return s;
+}
+// A tall banner: wooden pole drawn in SVG, cloth drawn on a canvas and rippled strip by strip.
+const flags=[];
+function poleSVG(h){
+  return '<svg width="16" height="'+h+'" viewBox="0 0 16 '+h+'" aria-hidden="true">'
+   +'<defs><linearGradient id="pw" x1="0" x2="1"><stop offset="0" stop-color="#5a4128"/><stop offset=".45" stop-color="#9a7550"/><stop offset="1" stop-color="#4a331d"/></linearGradient>'
+   +'<radialGradient id="pb" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#f1e2ae"/><stop offset=".5" stop-color="#c49a45"/><stop offset="1" stop-color="#7d5d22"/></radialGradient></defs>'
+   +'<ellipse cx="8" cy="'+(h-2)+'" rx="14" ry="3.5" fill="#24251f" opacity=".12"/>'
+   +'<path d="M1 '+(h-1)+' q3 -7 7 -7 q4 0 7 7 z" fill="#b9b39e" stroke="#4b4636" stroke-width=".8"/>'
+   +'<rect x="5.5" y="9" width="5" height="'+(h-14)+'" rx="2.5" fill="url(#pw)" stroke="#3a2a17" stroke-width=".7"/>'
+   +'<circle cx="8" cy="7" r="6" fill="url(#pb)" stroke="#5c4418" stroke-width=".7"/>'
+   +'</svg>';
+}
+function makeCloth(label,cw,ch,r){
+  const notch=Math.round(cw*0.22), c=document.createElement('canvas');
+  c.width=Math.ceil(cw*r); c.height=Math.ceil(ch*r);
+  const g=c.getContext('2d'); g.scale(r,r);
+  const shape=()=>{g.beginPath();g.moveTo(0,0);g.lineTo(cw,0);g.lineTo(cw-notch,ch/2);g.lineTo(cw,ch);g.lineTo(0,ch);g.closePath();};
+  shape(); const grad=g.createLinearGradient(0,0,0,ch); grad.addColorStop(0,'#6f7e36'); grad.addColorStop(1,'#56632a'); g.fillStyle=grad; g.fill();
+  g.save(); shape(); g.clip();
+  // watercolor blooms
+  let seed=label.charCodeAt(0)||7; const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+  for(let i=0;i<26;i++){ const x=rnd()*cw,y=rnd()*ch,rr=6+rnd()*18; const rg=g.createRadialGradient(x,y,0,x,y,rr); const dark=rnd()<.5; rg.addColorStop(0,dark?'rgba(40,48,18,.18)':'rgba(170,184,110,.20)'); rg.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle=rg; g.fillRect(x-rr,y-rr,rr*2,rr*2); }
+  // hem near the pole and a woven border
+  g.fillStyle='rgba(30,36,12,.28)'; g.fillRect(0,0,5,ch);
+  g.strokeStyle='rgba(232,213,154,.75)'; g.lineWidth=1.2; g.setLineDash([3,2]);
+  g.beginPath(); g.moveTo(8,4); g.lineTo(cw-4,4); g.moveTo(8,ch-4); g.lineTo(cw-4,ch-4); g.stroke(); g.setLineDash([]);
+  g.restore();
+  shape(); g.strokeStyle='#33401a'; g.lineWidth=1.1; g.stroke();
+  const cx=(cw-notch)/2+3, cy=ch/2;
+  if(label){ g.fillStyle='#fafaf5'; g.font='700 '+Math.round(ch*0.46)+'px "Gowun Batang",serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(label,cx,cy+1); }
+  else { g.fillStyle='#fafaf5'; g.beginPath(); g.arc(cx,cy,ch*0.12,0,Math.PI*2); g.fill(); }
+  return c;
+}
+function makeFlag(label,h,cw){
+  const ch=Math.round(cw*0.62), amp=Math.round(ch*0.16), r=Math.min(2,devicePixelRatio||1);
+  const wrap=document.createElement('div'); wrap.innerHTML=poleSVG(h);
+  const cv=document.createElement('canvas'); cv.className='cloth';
+  const W2=cw+6, H2=ch+amp*2+10;
+  cv.width=Math.ceil(W2*r); cv.height=Math.ceil(H2*r); cv.style.width=W2+'px'; cv.style.height=H2+'px';
+  cv.style.left='10px'; cv.style.top=(12-amp)+'px';
+  wrap.appendChild(cv);
+  const f={cv,ctx:cv.getContext('2d'),flat:makeCloth(label,cw,ch,r),cw,ch,amp,r,el:null,phase:Math.random()*6};
+  flags.push(f); f.wrap=wrap; drawFlag(f,0); return f;
+}
+function drawFlag(f,t){
+  const {ctx,flat,cw,ch,amp,r}=f; ctx.setTransform(r,0,0,r,0,0); ctx.clearRect(0,0,cw+6,ch+amp*2+10);
+  const step=1.5, k=Math.PI*2/(cw*0.85), w=t*0.0028+f.phase;
+  for(let x=0;x<cw;x+=step){
+    const u=x/cw, ph=x*k-w, a=amp*Math.pow(u,1.15);
+    const dy=a*Math.sin(ph)+u*ch*0.05+amp;
+    const sw=Math.min(step+0.6,cw-x);
+    ctx.drawImage(flat,x*r,0,sw*r,flat.height,x,dy,sw,ch);
+    const l=Math.cos(ph)*Math.pow(u,0.8);
+    ctx.globalCompositeOperation='source-atop';
+    ctx.fillStyle=l>0?'rgba(255,250,225,'+(l*0.22).toFixed(3)+')':'rgba(15,18,6,'+(-l*0.30).toFixed(3)+')';
+    ctx.fillRect(x,dy-1,sw,ch+2);
+    ctx.globalCompositeOperation='source-over';
+  }
+}
+function layout(){
+  W=innerWidth; H=innerHeight;
+  const mobile=W<760;
+  const short=H<720;
+  ROAD=Math.round(H*(mobile?(short?0.105:0.13):0.16));
+  dw=Math.round(Math.min(mobile?W*(short?0.62:0.74):Math.min(520,W*0.36), (H*(mobile?0.3:0.42))*FW/FH));
+  dh=Math.round(dw*FH/FW);
+  document.documentElement.style.setProperty('--road',ROAD+'px');
+  document.documentElement.style.setProperty('--chh',dh+'px');
+  document.documentElement.style.setProperty('--foot',Math.round(dh*0.02)+'px');
+  
+  const r=Math.min(2,devicePixelRatio||1);
+  cv.width=dw*r; cv.height=dh*r; cv.style.width=dw+'px'; cv.style.height=dh+'px'; ctx.setTransform(r,0,0,r,0,0);
+  charX=mobile?Math.round(W*0.03):Math.round(W*0.05);
+  document.documentElement.style.setProperty('--sx',mobile?'0px':Math.round(charX+dw+130)+'px');
+  document.documentElement.style.setProperty('--sb',(mobile?ROAD+dh+18:ROAD+28)+'px');
+  front=charX+dw*0.93;
+  gap=Math.max(mobile?W*1.05:W*0.62,560);
+  // world stops: pos where the front of the group meets the marker
+  stopList=[];
+  let x=0;
+  order.forEach((k,i)=>{ if(i===0){stops[k]=0;} else { x+= subOf[k]?gap*0.7:gap; stops[k]=x+W*0.25; } stopList.push(stops[k]); });
+  maxPos=stops.end; worldW=maxPos+W*1.6;
+  world.style.width=worldW+'px';
+  // markers
+  $$('.marker').forEach(e=>e.remove()); flags.length=0;
+  let fi=0;
+  order.slice(1).forEach(k=>{
+    const m=document.createElement('div');
+    m.className='marker'+(kind[k]==='stone'?' stone':'');
+    if(kind[k]==='stone'){ m.innerHTML='<i></i><i></i><i></i>'; m.style.left=(stops[k]+charX+dw+26)+'px'; }
+    else { fi++; const fl=makeFlag(kind[k]==='end'?'':String(fi), Math.round(dh*(mobile?1.12:1.2)), mobile?56:84); m.appendChild(fl.wrap); fl.x=stops[k]+charX+dw+(mobile?4:14); m.style.left=fl.x+'px'; m.style.width='16px'; m.style.height=Math.round(dh*(mobile?1.12:1.2))+'px'; }
+    world.appendChild(m);
+  });
+  dot.style.left=(front+4)+'px';
+  // parallax hills
+  const fw=Math.ceil(maxPos*0.25+W*1.5), nw=Math.ceil(maxPos*0.55+W*1.5);
+  const fh=Math.round(H*0.42), nh=Math.round(H*0.3);
+  far.style.bottom=(ROAD-2)+'px'; near.style.bottom=(ROAD-2)+'px';
+  far.innerHTML='<svg width="'+fw+'" height="'+fh+'" viewBox="0 0 '+fw+' '+fh+'"><path d="'+hillPath(fw,fh,fh*0.62,1.3,40)+'" fill="var(--hill-far)"/></svg>';
+  near.innerHTML='<svg width="'+nw+'" height="'+nh+'" viewBox="0 0 '+nw+' '+nh+'"><path d="'+hillPath(nw,nh,nh*0.55,4.1,30)+'" fill="var(--hill-near)"/>'+trees(nw,nh*0.98,2.7,Math.round(nw/420),'#c7cfac')+'</svg>';
+  // progress ticks
+  $$('.bar s').forEach(e=>e.remove());
+  ['belief','fence','story','study','think','hope','maker','end'].forEach(k=>{const s=document.createElement('s');s.style.left=(stops[k]/maxPos*100)+'%';bar.appendChild(s);});
+  pos=Math.min(pos,maxPos); target=Math.min(target,maxPos);
+  render(true);
+}
+
+function nudge(d){ target=Math.max(0,Math.min(maxPos,target+d)); lastInput=performance.now(); hint.style.opacity=0; }
+addEventListener('wheel',e=>{ if(!$('#sheet').hidden) return; e.preventDefault(); const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY; nudge(d*(e.deltaMode===1?32:1)*1.0); },{passive:false});
+view.addEventListener('pointerdown',e=>{dragging={x:e.clientX,y:e.clientY,id:e.pointerId};view.classList.add('drag');try{view.setPointerCapture(e.pointerId)}catch(_){}});
+view.addEventListener('pointermove',e=>{ if(!dragging) return; const dx=e.clientX-dragging.x, dy=e.clientY-dragging.y; dragging.x=e.clientX; dragging.y=e.clientY; nudge(-(Math.abs(dx)>Math.abs(dy)?dx:dy)*1.6); });
+const endDrag=()=>{dragging=null;view.classList.remove('drag');lastInput=performance.now();};
+view.addEventListener('pointerup',endDrag); view.addEventListener('pointercancel',endDrag);
+// touch on scene text should also move the road
+$$('.scene').forEach(s=>{ s.addEventListener('pointerdown',e=>{ if(e.target.closest('button,a')) return; dragging={x:e.clientX,y:e.clientY}; }); s.addEventListener('pointermove',e=>{ if(!dragging) return; const dx=e.clientX-dragging.x, dy=e.clientY-dragging.y; dragging.x=e.clientX; dragging.y=e.clientY; nudge(-(Math.abs(dx)>Math.abs(dy)?dx:dy)*1.6); }); s.addEventListener('pointerup',endDrag); s.addEventListener('pointercancel',endDrag); s.style.touchAction='none'; });
+addEventListener('keydown',e=>{
+  if(e.target.closest&&e.target.closest('button,a')&&(e.key===' '||e.key==='Enter')) return;
+  if(!$('#sheet').hidden){ if(e.key==='Escape') closeSheet(); return; }
+  const i=nearestIndex(target);
+  if(['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)){ e.preventDefault(); goTo(order[Math.min(order.length-1,i+(stopList[i]<=target+2?1:0))]); }
+  if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); goTo(order[Math.max(0,i-(stopList[i]>=target-2?1:0))]); }
+});
+function nearestIndex(p){ let b=0; stopList.forEach((s,i)=>{ if(Math.abs(s-p)<Math.abs(stopList[b]-p)) b=i; }); return b; }
+function goTo(k){ target=stops[k]; lastInput=0; hint.style.opacity=0; }
+$$('nav button[data-go]').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.go)));
+$('#home').addEventListener('click',e=>{e.preventDefault();target=0;pos=0;lastInput=0;render(true);});
+
+// sheet
+const sheet=$('#sheet');
+function openSheet(id){ sheet.hidden=false; const t=id?document.getElementById('s-'+id):null; $('#sheetPanel').scrollTop=t?t.offsetTop-20:0; $('#closeSheet').focus(); }
+function closeSheet(){ sheet.hidden=true; }
+$('#openAll').addEventListener('click',()=>openSheet());
+$$('[data-sheet]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();openSheet(b.dataset.sheet);}));
+$('#closeSheet').addEventListener('click',closeSheet);
+sheet.addEventListener('click',e=>{ if(e.target===sheet) closeSheet(); });
+
+// sky tint over the journey: dawn -> day -> late afternoon
+const skyStops=[[0,[246,239,226]],[0.35,[247,248,241]],[0.75,[245,246,236]],[1,[246,236,222]]];
+function skyAt(t){ for(let i=1;i<skyStops.length;i++){ const [a,ca]=skyStops[i-1],[b,cb]=skyStops[i]; if(t<=b){ const u=(t-a)/(b-a); return ca.map((v,j)=>Math.round(v+(cb[j]-v)*u)); } } return skyStops[skyStops.length-1][1]; }
+
+let lastFrame=-1,lastPos=-1;
+function render(force){
+  const t=pos/maxPos;
+  // intro: the group walks in from the left while the road draws out from the dot
+  const enter=Math.min(1,pos/(gap*0.5));
+  const ease=1-Math.pow(1-enter,3);
+  const cx=charX-(1-ease)*(charX+dw*1.05);
+  cv.style.left=cx+'px';
+  world.style.transform='translate3d('+(-pos)+'px,0,0)';
+  far.style.transform='translate3d('+(-pos*0.25)+'px,0,0)';
+  near.style.transform='translate3d('+(-pos*0.55)+'px,0,0)';
+  const roadStart=front+4, reveal=Math.min(worldW-roadStart, W*0.08+pos*3.2);
+  road.style.left=roadStart+'px'; road.style.width=Math.max(0,reveal)+'px';
+  const c=skyAt(t); sky.style.background='linear-gradient(rgb('+c.join(',')+'),var(--paper) 72%)';
+  barfill.style.width=(t*100)+'%';
+  // walk frame follows distance travelled; stand still when not moving
+  const stride=dw*1.1;
+  const f=((Math.floor(pos/stride*N)%N)+N)%N;
+  if(force||f!==lastFrame){ if(sprite.complete&&sprite.naturalWidth){ ctx.clearRect(0,0,dw,dh); ctx.drawImage(sprite,(f%COLS)*FW,Math.floor(f/COLS)*FH,FW,FH,0,0,dw,dh);} lastFrame=f; }
+  // scenes fade in as the group reaches their marker
+  scenes.forEach(s=>{
+    const k=s.dataset.stop, sp=stops[k];
+    const d=(pos-sp)/(k===order[0]?gap*0.55:gap*0.42);
+    const a=Math.max(0,1-Math.abs(d)*1.15);
+    const vis=a>0.01;
+    s.style.opacity=a.toFixed(3);
+    s.style.visibility=vis?'visible':'hidden';
+    s.style.transform='translate3d('+(-d*40).toFixed(1)+'px,0,0)';
+    const kids=s.querySelector('.in').children;
+    for(let i=0;i<kids.length;i++){ const kk=Math.max(0,Math.min(1,Math.abs(d)*2.2-i*0.04)); kids[i].style.setProperty('--k',kk.toFixed(3)); }
+    // the book opens as you arrive
+    if(k==='o1'){ const g=s.querySelector('.good'); if(g) g.style.setProperty('--u',Math.max(0,1-Math.abs(d)*2.5).toFixed(3)); }
+    if(k==='study'){ const open=Math.max(0,1-Math.abs(d)*2); $$('.pg').forEach((p,i)=>{ p.style.transform=i%2?'rotateY('+((1-open)*-70).toFixed(1)+'deg)':''; }); }
+  });
+  // nav highlight
+  const ni=nearestIndex(pos), cur=order[ni];
+  const sec=subOf[cur]||cur;
+  $$('nav button[data-go]').forEach(b=>b.setAttribute('aria-current',b.dataset.go===sec&&Math.abs(stopList[ni]-pos)<gap*0.4?'true':'false'));
+}
+
+function tick(now){
+  // settle on the nearest scene shortly after the reader lets go, like cuts in a film
+  if(!dragging && lastInput && now-lastInput>220){ const i=nearestIndex(target); if(Math.abs(stopList[i]-target)<gap*0.5) target=stopList[i]; lastInput=0; }
+  const diff=target-pos;
+  let step=reduce?diff:diff*0.085;
+  const cap=Math.max(6,W*0.022);
+  if(step>cap) step=cap; if(step<-cap) step=-cap;
+  if(Math.abs(diff)<0.4){ pos=target; } else pos+=step;
+  if(pos!==lastPos){ render(false); lastPos=pos; }
+  if(!reduce){ for(const f of flags){ const sx=f.x-pos; if(sx>-160&&sx<W+40) drawFlag(f,now); } }
+  requestAnimationFrame(tick);
+}
+sprite.onload=()=>render(true);
+addEventListener('resize',layout);
+layout(); requestAnimationFrame(tick);
+})();
+</script>
+
+</body>
+</html>
