@@ -654,8 +654,8 @@ function tick(now){
     lastInput=0; gestureFrom=null;
   }
   const diff=target-pos;
-  let step=reduce?diff:diff*0.042;
-  const cap=Math.max(3,W*0.011);
+  let step=reduce?diff:diff*0.021;
+  const cap=Math.max(1.5,W*0.0055);
   if(step>cap) step=cap; if(step<-cap) step=-cap;
   if(Math.abs(diff)<0.4){ pos=target; } else pos+=step;
   if(pos!==lastPos){ render(false); lastPos=pos; }
