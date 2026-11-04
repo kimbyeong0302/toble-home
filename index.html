@@ -615,7 +615,8 @@ addEventListener('keydown',e=>{
 });
 function nearestIndex(p){ let b=0; stopList.forEach((s,i)=>{ if(Math.abs(s-p)<Math.abs(stopList[b]-p)) b=i; }); return b; }
 function goTo(k){ target=stops[k]; lastInput=0; gestureFrom=null; hint.style.opacity=0; }
-$$('nav button[data-go]').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.go)));
+function jumpTo(k){ target=stops[k]; pos=target; lastInput=0; gestureFrom=null; hint.style.opacity=0; render(true); }
+$$('nav button[data-go]').forEach(b=>b.addEventListener('click',()=>jumpTo(b.dataset.go)));
 $('#home').addEventListener('click',e=>{e.preventDefault();target=0;pos=0;lastInput=0;gestureFrom=null;render(true);});
 
 // sheet
