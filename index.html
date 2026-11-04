@@ -55,11 +55,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .marker svg{display:block;overflow:visible}
 .marker canvas.cloth{position:absolute;left:0;top:0;pointer-events:none}
 @keyframes wave{0%,100%{transform:none}35%{transform:skewY(3deg) scaleX(.96)}70%{transform:skewY(-2deg) scaleX(.98)}}
-.marker.stone{bottom:var(--road)}
-.stone i{display:block;border-radius:50%;background:var(--olive-2);margin:0 auto}
-.stone i:nth-child(1){width:12px;height:9px;opacity:.75}
-.stone i:nth-child(2){width:18px;height:11px;margin-top:-2px;opacity:.85}
-.stone i:nth-child(3){width:26px;height:13px;margin-top:-3px}
+.marker.stone{bottom:calc(var(--road) - 3px)}
+.marker.stone svg{display:block;overflow:visible}
 
 canvas#walk{position:absolute;pointer-events:none;bottom:calc(var(--road) - var(--foot))}
 
@@ -521,6 +518,37 @@ function drawFlag(f,t){
     ctx.globalCompositeOperation='source-over';
   }
 }
+// A cairn of rough field stones, stacked and drawn a little differently each time.
+function cairnSVG(seed,h){
+  let sd=seed*9301+49297; const rnd=()=>{ sd=(sd*9301+49297)%233280; return sd/233280; };
+  const tones=[['#cfc8b4','#a59d86'],['#c4bca6','#968e77'],['#d6cfbc','#ada58e'],['#bdb59e','#8d856e'],['#cac3ae','#9f977f']];
+  const W=Math.round(h*1.05), uid='c'+seed+'_'+Math.round(h);
+  let defs='', body='', y=h, cx=W/2;
+  const layers=[[0.96,0.27],[0.74,0.24],[0.58,0.22],[0.42,0.2],[0.28,0.18]];
+  body+='<ellipse cx="'+cx+'" cy="'+(h-1)+'" rx="'+(W*0.56)+'" ry="'+(h*0.045)+'" fill="#24251f" opacity=".14"/>';
+  layers.forEach((L,li)=>{
+    const n= li===0?2:li===1?2:1;               // two stones side by side at the bottom rows
+    const rowW=W*L[0], sh=h*L[1];
+    for(let j=0;j<n;j++){
+      const sw=(rowW/n)*(n>1?1.05:1), scx=cx-(rowW/2)+(rowW/n)*(j+0.5)+(rnd()-0.5)*W*0.05, scy=y-sh*0.5+(n>1&&j?(rnd()-0.5)*sh*0.12:0);
+      const rx=sw/2*(0.86+rnd()*0.28), ry=sh/2*(0.8+rnd()*0.4), pts=[]; const k=6+Math.floor(rnd()*3);
+      for(let a=0;a<k;a++){ const t=a/k*Math.PI*2+(rnd()-0.5)*0.5; const r=0.72+rnd()*0.36; let px=scx+Math.cos(t)*rx*r, py=scy+Math.sin(t)*ry*r; if(Math.sin(t)>0.45) py=scy+ry*(0.82+rnd()*0.12); pts.push([px,py]); }
+      // mostly straight edges with softened corners, so each stone reads as a rough, broken piece of rock
+      let d=''; for(let i=0;i<k;i++){ const p=pts[i], q=pts[(i+1)%k]; const a1=[p[0]+(q[0]-p[0])*0.18,p[1]+(q[1]-p[1])*0.18], a2=[p[0]+(q[0]-p[0])*0.82,p[1]+(q[1]-p[1])*0.82]; d+=(i?' Q'+p[0].toFixed(1)+' '+p[1].toFixed(1)+' ':'M')+a1[0].toFixed(1)+' '+a1[1].toFixed(1)+' L'+a2[0].toFixed(1)+' '+a2[1].toFixed(1); }
+      d+=' Q'+pts[0][0].toFixed(1)+' '+pts[0][1].toFixed(1)+' '+(pts[0][0]+(pts[1][0]-pts[0][0])*0.18).toFixed(1)+' '+(pts[0][1]+(pts[1][1]-pts[0][1])*0.18).toFixed(1)+' Z';
+      const rot=((rnd()-0.5)*14).toFixed(1);
+      const tn=tones[Math.floor(rnd()*tones.length)], gid=uid+'_'+li+'_'+j;
+      defs+='<linearGradient id="'+gid+'" x1="0.2" y1="0" x2="0.6" y2="1"><stop offset="0" stop-color="'+tn[0]+'"/><stop offset="1" stop-color="'+tn[1]+'"/></linearGradient>';
+      body+='<g transform="rotate('+rot+' '+scx.toFixed(1)+' '+scy.toFixed(1)+')"><path d="'+d+'" fill="url(#'+gid+')" stroke="#4f4a3c" stroke-width="1.1" stroke-linejoin="round"/>';
+      body+='<path d="M'+(scx-rx*0.55).toFixed(1)+' '+(scy-ry*0.35).toFixed(1)+' Q'+(scx-rx*0.1).toFixed(1)+' '+(scy-ry*0.75).toFixed(1)+' '+(scx+rx*0.35).toFixed(1)+' '+(scy-ry*0.5).toFixed(1)+'" fill="none" stroke="#f4efe1" stroke-width="1.4" opacity=".55" stroke-linecap="round"/>';
+      if(rnd()<0.45) body+='<path d="M'+(scx+rx*(rnd()*0.4-0.1)).toFixed(1)+' '+(scy-ry*0.1).toFixed(1)+' l'+(rx*0.18).toFixed(1)+' '+(ry*0.35).toFixed(1)+' l'+(rx*0.12).toFixed(1)+' '+(ry*0.15).toFixed(1)+'" fill="none" stroke="#5c5646" stroke-width=".8" opacity=".6"/>';
+      if(rnd()<0.5) body+='<ellipse cx="'+(scx+rx*(rnd()-0.5)).toFixed(1)+'" cy="'+(scy+ry*0.35).toFixed(1)+'" rx="'+(rx*0.18).toFixed(1)+'" ry="'+(ry*0.12).toFixed(1)+'" fill="#7f8f45" opacity=".35"/>';
+      body+='</g>';
+    }
+    y-=sh*0.82;
+  });
+  return '<svg width="'+W+'" height="'+h+'" viewBox="0 0 '+W+' '+h+'" aria-hidden="true"><defs>'+defs+'</defs>'+body+'</svg>';
+}
 function layout(){
   W=innerWidth; H=innerHeight;
   const mobile=W<760;
@@ -547,11 +575,11 @@ function layout(){
   world.style.width=worldW+'px';
   // markers
   $$('.marker').forEach(e=>e.remove()); flags.length=0;
-  let fi=0;
+  let fi=0, si=0;
   order.slice(1).forEach(k=>{
     const m=document.createElement('div');
     m.className='marker'+(kind[k]==='stone'?' stone':'');
-    if(kind[k]==='stone'){ m.innerHTML='<i></i><i></i><i></i>'; m.style.left=(stops[k]+charX+dw+26)+'px'; }
+    if(kind[k]==='stone'){ si++; const ch=Math.round(dh*(mobile?0.36:0.4)); m.innerHTML=cairnSVG(si*7+3,ch); m.style.left=(stops[k]+charX+dw+(mobile?2:18))+'px'; }
     else { fi++; const fl=makeFlag(kind[k]==='end'?'':String(fi), Math.round(dh*(mobile?1.12:1.2)), mobile?56:84); m.appendChild(fl.wrap); fl.x=stops[k]+charX+dw+(mobile?4:14); m.style.left=fl.x+'px'; m.style.width='16px'; m.style.height=Math.round(dh*(mobile?1.12:1.2))+'px'; }
     world.appendChild(m);
   });
