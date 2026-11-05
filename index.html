@@ -174,8 +174,10 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 /* one sentence per line; a wrapped sentence never starts mid-line */
 .scene p,.scene li,.sheet p,.sheet li{word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty}
 .sen{display:block}
+.scene p.story{font-family:"Noto Serif KR",var(--display);font-size:clamp(15.5px,1.55vw,19px)!important;line-height:1.85!important;color:var(--ink)!important;margin:0 0 14px!important;max-width:34em}
+.scene p.story:last-child{margin-bottom:0!important}
 .scene .q{font-family:"Noto Serif KR",var(--display);font-size:clamp(15px,1.5vw,17px);color:var(--olive);margin:-4px 0 8px}
-@media (max-width:760px) and (max-height:700px){.scene .book{display:none}.scene p.lead{font-size:15.5px;line-height:1.6}.scene h2{font-size:20px}.scene .meta li{padding:4px 8px;font-size:12px}.scene p{line-height:1.6}}
+@media (max-width:760px) and (max-height:700px){.scene p.story{font-size:14.5px!important;line-height:1.7!important;margin-bottom:10px!important}.scene .book{display:none}.scene p.lead{font-size:15.5px;line-height:1.6}.scene h2{font-size:20px}.scene .meta li{padding:4px 8px;font-size:12px}.scene p{line-height:1.6}}
 </style>
 </head>
 <body>
@@ -343,26 +345,15 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 </div></section>
 
 <section class="scene" data-stop="m1"><div class="in">
-  <p class="eyebrow">손을 잡고</p>
-  <p class="quote"><span class="sen">어린 시절, 부모님 손을 잡고 처음 교회 문을 들어섰습니다.</span><span class="sen">부모님도 막 신앙을 시작하신 때였습니다.</span></p>
+  <p class="eyebrow">지루한 책이 아버지의 음성이 되기까지</p>
+  <p class="story"><span class="sen">어린 시절, 부모님 손을 잡고 처음 교회 문을 들어섰습니다.</span><span class="sen">부모님도 막 신앙을 시작하신 때였습니다.</span><span class="sen">부모님은 저를 말씀 안에서 기르고 싶으셨지만, 무엇을 어떻게 가르쳐야 할지 모르셨습니다.</span><span class="sen">그래서 "성경 읽어라"가 전부였고, 어린 제게 성경은 그저 지루한 책이었습니다.</span></p>
+  <p class="story"><span class="sen">어른이 되어 예수님을 인격적으로 만났습니다.</span><span class="sen">다시 펼친 성경에는 살아 계신 하나님의 말씀이 가득했습니다.</span><span class="sen">성경은 더 이상 지루한 책이 아니라 사랑하시는 아버지의 음성이었습니다.</span></p>
 </div></section>
 <section class="scene" data-stop="m2"><div class="in">
-  <p class="eyebrow">지루한 책</p>
-  <p class="quote"><span class="sen">부모님은 저를 말씀 안에서 기르고 싶으셨지만, 무엇을 어떻게 가르쳐야 할지 모르셨습니다.</span><span class="sen">그래서 "성경 읽어라"가 전부였고, 어린 제게 성경은 그저 지루한 책이었습니다.</span></p>
-</div></section>
-<section class="scene" data-stop="m3"><div class="in">
-  <p class="eyebrow">아버지의 음성</p>
-  <p class="quote"><span class="sen">어른이 되어 예수님을 인격적으로 만났습니다.</span><span class="sen">다시 펼친 성경에는 살아 계신 하나님의 말씀이 가득했습니다.</span><span class="sen">성경은 더 이상 지루한 책이 아니라 사랑하시는 아버지의 음성이었습니다.</span></p>
-</div></section>
-<section class="scene" data-stop="m4"><div class="in">
-  <p class="eyebrow">자녀를 기다리며</p>
-  <p class="quote"><span class="sen">은혜로 가정을 이루고 자녀를 기다리며 깨달았습니다.</span><span class="sen">가장 먼저 해야 할 일은 우리 집에 바른 교회가 세워지는 것, 그리고 아이를 하나님의 말씀 위에서 기르는 것이라는 것을.</span></p>
-</div></section>
-<section class="scene" data-stop="m5"><div class="in">
   <p class="eyebrow">그래서, 토블</p>
-  <p class="quote"><span class="sen">우리 아이는 "읽어라"는 말만 듣고 자라지 않기를.</span><span class="sen">말씀 안에 숨겨진 보화를 스스로 발견하고, 깊은 우물에서 직접 길어 마시는 사람으로 자라기를.</span><span class="sen">그 마음으로 토블을 만들었습니다.</span></p>
+  <p class="story"><span class="sen">은혜로 가정을 이루고 자녀를 기다리며 깨달았습니다.</span><span class="sen">가장 먼저 해야 할 일은 우리 집에 바른 교회가 세워지는 것, 그리고 아이를 하나님의 말씀 위에서 기르는 것이라는 것을.</span></p>
+  <p class="story"><span class="sen">우리 아이는 "읽어라"는 말만 듣고 자라지 않기를.</span><span class="sen">말씀 안에 숨겨진 보화를 스스로 발견하고, 깊은 우물에서 직접 길어 마시는 사람으로 자라기를.</span><span class="sen">그 마음으로 토블을 만들었습니다.</span></p>
 </div></section>
-
 <section class="scene" data-stop="end"><div class="in">
   <p class="eyebrow">길 끝에서</p>
   <h2>이 길은 혼자 걷는 길이 아닙니다</h2>
@@ -464,9 +455,9 @@ const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll
 const view=$('#view'),world=$('#world'),far=$('#far'),near=$('#near'),road=$('#road'),dot=$('#dot'),sky=$('#sky');
 const cv=$('#walk'),ctx=cv.getContext('2d'),hint=$('#hint'),barfill=$('#barfill'),bar=$('#bar');
 const scenes=$$('.scene');
-const order=['o1','o2','o3','intro','home','belief','fence','story','place','s2','s3','s4','study','think','hope','maker','m1','m2','m3','m4','m5','end'];
-const subOf={place:'story',s2:'story',s3:'story',s4:'story',o2:'o1',o3:'o1',intro:'o1',home:'o1',m1:'maker',m2:'maker',m3:'maker',m4:'maker',m5:'maker'};
-const kind={place:'stone',s2:'stone',s3:'stone',s4:'stone',o2:'stone',o3:'stone',intro:'stone',home:'stone',belief:'flag',fence:'flag',story:'flag',study:'flag',think:'flag',hope:'flag',maker:'flag',m1:'stone',m2:'stone',m3:'stone',m4:'stone',m5:'stone',end:'end'};
+const order=['o1','o2','o3','intro','home','belief','fence','story','place','s2','s3','s4','study','think','hope','maker','m1','m2','end'];
+const subOf={place:'story',s2:'story',s3:'story',s4:'story',o2:'o1',o3:'o1',intro:'o1',home:'o1',m1:'maker',m2:'maker'};
+const kind={place:'stone',s2:'stone',s3:'stone',s4:'stone',o2:'stone',o3:'stone',intro:'stone',home:'stone',belief:'flag',fence:'flag',story:'flag',study:'flag',think:'flag',hope:'flag',maker:'flag',m1:'stone',m2:'stone',end:'end'};
 let W,H,ROAD,dw,dh,charX,front,gap,stops={},stopList=[],worldW,maxPos,pos=0,target=0,lastInput=0,dragging=null;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
