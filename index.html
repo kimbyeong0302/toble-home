@@ -123,6 +123,10 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 .bar s{position:absolute;top:-3px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--paper);border:1px solid var(--olive-2);text-decoration:none}
 
 /* sheet */
+.fab{position:fixed;z-index:25;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 40px);font:700 15px/1 var(--body);padding:15px 22px;border:0;border-radius:999px;background:var(--olive);color:var(--paper);box-shadow:0 6px 20px rgba(36,37,31,.22);cursor:pointer;text-decoration:none;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .4s,transform .4s}
+.fab.on{opacity:1;transform:none;pointer-events:auto}
+.fab:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.fab{transition:none}}
 .sheet{position:fixed;inset:0;z-index:40;display:flex;justify-content:flex-end;background:rgba(36,37,31,.28)}
 .sheet[hidden]{display:none!important}
 .sheet .panel{width:min(560px,100%);height:100%;overflow-y:auto;background:var(--paper);box-sizing:border-box;padding-block:calc(env(safe-area-inset-top,0px) + 28px) calc(env(safe-area-inset-bottom,0px) + 40px);padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px));touch-action:pan-y;user-select:text;-webkit-user-select:text}
@@ -366,6 +370,8 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 
 <div class="hint" id="hint">아래로 스크롤하거나 <b>옆으로 밀어</b> 길을 따라가 보세요</div>
 <div class="bar" id="bar"><i id="barfill"></i></div>
+<!-- 하단 플로팅 신청 버튼: 신청서 링크가 생기면 button을 <a class="fab" href="신청서주소" target="_blank" rel="noopener">로 바꾸면 됩니다 -->
+<button class="fab" id="fab" data-sheet="parents" aria-label="시범 가정 신청 안내 열기">시범 가정 신청</button>
 
 <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="토블 전체 내용">
   <div class="panel" id="sheetPanel">
@@ -647,6 +653,9 @@ function closeSheet(){ sheet.hidden=true; }
 $('#openAll').addEventListener('click',()=>openSheet());
 $$('[data-sheet]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();openSheet(b.dataset.sheet);}));
 $('#closeSheet').addEventListener('click',closeSheet);
+// 플로팅 신청 버튼: 처음 안내 문구가 사라지면(=길을 걷기 시작하면) 나타남
+(function(){ const fab=$('#fab'); const show=()=>{ if(hint.style.opacity==='0'){ fab.classList.add('on'); mo.disconnect(); } };
+  const mo=new MutationObserver(show); mo.observe(hint,{attributes:true,attributeFilter:['style']}); show(); })();
 sheet.addEventListener('click',e=>{ if(e.target===sheet) closeSheet(); });
 
 // sky tint over the journey: dawn -> day -> late afternoon
