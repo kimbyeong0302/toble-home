@@ -32,6 +32,8 @@
   --hill-far:#e9ebdf;
   --hill-near:#dde2c9;
   --line:#e2e2d8;
+  --range-far:#d3dfe5;
+  --range-near:#dbe3dc;
   --display:"Gowun Batang","Nanum Myeongjo","Apple SD Gothic Neo",serif;
   --body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
 }
@@ -121,6 +123,13 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 .bar{position:fixed;z-index:12;left:max(24px,env(safe-area-inset-left,0px));right:max(24px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 22px);height:2px;background:var(--line)}
 .bar i{display:block;height:100%;width:0;background:var(--olive)}
 .bar s{position:absolute;top:-3px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--paper);border:1px solid var(--olive-2);text-decoration:none}
+.bar s b{position:absolute;left:50%;bottom:14px;transform:translate(-50%,4px);white-space:nowrap;font:500 13px/1 var(--body);color:var(--ink);background:var(--paper);border:1px solid var(--line);padding:5px 9px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;box-shadow:0 2px 8px rgba(36,37,31,.08)}
+.bar s b.r{left:auto;right:-6px;transform:translate(0,4px)}
+.bar s.on b{opacity:1;transform:translate(-50%,0)}
+.bar s.on b.r{transform:none}
+.bar s.below b{bottom:auto;top:12px;padding:3px 8px;font-size:12px}
+.bar s.on{border-color:var(--olive);background:var(--olive)}
+#clouds,#range{will-change:transform}
 
 /* sheet */
 .fab{position:fixed;z-index:25;left:50%;bottom:calc((var(--road) + env(safe-area-inset-bottom,0px) + 23px) / 2 - 19px);font:700 14px/1 var(--body);padding:12px 22px;white-space:nowrap;border:0;border-radius:999px;background:var(--olive);color:var(--paper);box-shadow:0 4px 14px rgba(36,37,31,.18);cursor:pointer;text-decoration:none;opacity:0;transform:translate(-50%,10px);pointer-events:none;transition:opacity .4s,transform .4s}
@@ -188,6 +197,8 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 
 <div id="sky"></div>
 <div id="view" aria-label="토블 이야기 길">
+  <div class="layer" id="clouds"></div>
+  <div class="layer" id="range"></div>
   <div class="layer" id="far"></div>
   <div class="layer" id="near"></div>
   <div id="ground"></div>
@@ -458,6 +469,7 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 const FW=610,FH=342,COLS=5,N=50;
 const sprite=new Image(); sprite.src="assets/walk.webp";
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const range=$('#range'),clouds=$('#clouds');
 const view=$('#view'),world=$('#world'),far=$('#far'),near=$('#near'),road=$('#road'),dot=$('#dot'),sky=$('#sky');
 const cv=$('#walk'),ctx=cv.getContext('2d'),hint=$('#hint'),barfill=$('#barfill'),bar=$('#bar');
 const scenes=$$('.scene');
@@ -468,6 +480,27 @@ let W,H,ROAD,dw,dh,charX,front,gap,stops={},stopList=[],worldW,maxPos,pos=0,targ
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 
+function ridgePath(width,height,amp,seed,step){
+  // 뾰족한 능선의 먼 산맥
+  let d='M0 '+height;
+  for(let x=0;x<=width+step;x+=step){
+    const r=0.5*(1-Math.abs(Math.sin(x*0.0019+seed)))+0.32*(1-Math.abs(Math.sin(x*0.0047+seed*1.7)))+0.1*(1-Math.abs(Math.sin(x*0.011+seed*3.1)));
+    d+=' L'+x.toFixed(0)+' '+(height-amp*(0.18+r)).toFixed(1);
+  }
+  return d+' L'+(width+step)+' '+height+' Z';
+}
+function cloudSVG(width,height,seed){
+  let s='', sd=seed*9301+49297; const rnd=()=>{ sd=(sd*9301+49297)%233280; return sd/233280; };
+  const n=Math.max(4,Math.round(width/520));
+  for(let i=0;i<n;i++){
+    const cx=(i+0.3+rnd()*0.5)*width/n, cy=height*(0.2+rnd()*0.55), w=90+rnd()*120;
+    s+='<g opacity="'+(0.55+rnd()*0.3).toFixed(2)+'" fill="#fff">'
+      +'<ellipse cx="'+cx.toFixed(0)+'" cy="'+cy.toFixed(0)+'" rx="'+(w*0.5).toFixed(0)+'" ry="'+(w*0.14).toFixed(0)+'"/>'
+      +'<ellipse cx="'+(cx-w*0.12).toFixed(0)+'" cy="'+(cy-w*0.1).toFixed(0)+'" rx="'+(w*0.22).toFixed(0)+'" ry="'+(w*0.15).toFixed(0)+'"/>'
+      +'<ellipse cx="'+(cx+w*0.12).toFixed(0)+'" cy="'+(cy-w*0.07).toFixed(0)+'" rx="'+(w*0.18).toFixed(0)+'" ry="'+(w*0.12).toFixed(0)+'"/></g>';
+  }
+  return '<svg width="'+width+'" height="'+height+'" viewBox="0 0 '+width+' '+height+'">'+s+'</svg>';
+}
 function hillPath(width,height,amp,seed,step){
   let d='M0 '+height+' L0 '+(height-amp*0.6);
   for(let x=0;x<=width+step;x+=step){
@@ -593,7 +626,9 @@ function layout(){
   document.documentElement.style.setProperty('--sx',mobile?'0px':Math.round(charX+dw+130)+'px');
   document.documentElement.style.setProperty('--sb',(mobile?ROAD+dh+18:ROAD+28)+'px');
   front=charX+dw*0.93;
-  gap=Math.max(mobile?W*1.05:W*0.62,560);
+  // 글 없이 걷는 시간을 이전의 2/3로: 모바일은 간격을 줄이고, 데스크톱은 깃발이 글과 겹치지 않게 간격은 두고 걸음을 빠르게
+  gap=mobile?Math.max(W*1.05,560)*(2/3):Math.max(W*0.62,560);
+  speedK=mobile?1:1.5;
   // world stops: pos where the front of the group meets the marker
   stopList=[];
   let x=0;
@@ -617,9 +652,21 @@ function layout(){
   far.style.bottom=(ROAD-2)+'px'; near.style.bottom=(ROAD-2)+'px';
   far.innerHTML='<svg width="'+fw+'" height="'+fh+'" viewBox="0 0 '+fw+' '+fh+'"><path d="'+hillPath(fw,fh,fh*0.62,1.3,40)+'" fill="var(--hill-far)"/></svg>';
   near.innerHTML='<svg width="'+nw+'" height="'+nh+'" viewBox="0 0 '+nw+' '+nh+'"><path d="'+hillPath(nw,nh,nh*0.55,4.1,30)+'" fill="var(--hill-near)"/>'+trees(nw,nh*0.98,2.7,Math.round(nw/420),'#c7cfac')+'</svg>';
-  // progress ticks
-  $$('.bar s').forEach(e=>e.remove());
-  ['belief','fence','story','study','think','hope','maker','end'].forEach(k=>{const s=document.createElement('s');s.style.left=(stops[k]/maxPos*100)+'%';bar.appendChild(s);});
+  // 데스크톱: 먼 산맥과 구름이 천천히 지나감
+  if(!mobile){
+    const rw=Math.ceil(maxPos*0.12+W*1.5), rh=Math.round(H*0.5);
+    range.style.bottom=(ROAD-2)+'px';
+    range.innerHTML='<svg width="'+rw+'" height="'+rh+'" viewBox="0 0 '+rw+' '+rh+'">'
+      +'<path d="'+ridgePath(rw,rh,rh*0.78,2.2,22)+'" fill="var(--range-far)"/>'
+      +'<path d="'+ridgePath(rw,rh,rh*0.55,5.3,18)+'" fill="var(--range-near)"/></svg>';
+    const cw=Math.ceil(maxPos*0.05+W*1.5), chh=Math.round(H*0.3);
+    clouds.style.bottom='auto'; clouds.style.top=Math.round(H*0.06)+'px';
+    clouds.innerHTML=cloudSVG(cw,chh,11);
+  } else { range.innerHTML=''; clouds.innerHTML=''; }
+  // progress ticks (+ 지나갈 때 잠깐 보이는 이름)
+  $$('.bar s').forEach(e=>e.remove()); tickEl={};
+  const names={}; $$('nav button[data-go]').forEach(b=>names[b.dataset.go]=b.textContent.trim()); names.end='길 끝에서';
+  ['belief','fence','story','study','think','hope','maker','end'].forEach(k=>{const s=document.createElement('s');const pct=stops[k]/maxPos*100;s.style.left=pct+'%';const b=document.createElement('b');b.textContent=names[k]||'';if(pct>92)b.className='r';s.appendChild(b);bar.appendChild(s);tickEl[k]=s;});
   pos=Math.min(pos,maxPos); target=Math.min(target,maxPos);
   render(true);
 }
@@ -662,6 +709,25 @@ sheet.addEventListener('click',e=>{ if(e.target===sheet) closeSheet(); });
 const skyStops=[[0,[246,239,226]],[0.35,[247,248,241]],[0.75,[245,246,236]],[1,[246,236,222]]];
 function skyAt(t){ for(let i=1;i<skyStops.length;i++){ const [a,ca]=skyStops[i-1],[b,cb]=skyStops[i]; if(t<=b){ const u=(t-a)/(b-a); return ca.map((v,j)=>Math.round(v+(cb[j]-v)*u)); } } return skyStops[skyStops.length-1][1]; }
 
+// 데스크톱 하늘: 맑은 하늘색 -> 한낮 -> 늦은 오후
+const skyStopsD=[[0,[212,227,236]],[0.35,[219,233,241]],[0.75,[221,232,238]],[1,[236,226,212]]];
+function skyAtD(t){ for(let i=1;i<skyStopsD.length;i++){ const [a,ca]=skyStopsD[i-1],[b,cb]=skyStopsD[i]; if(t<=b){ const u=(t-a)/(b-a); return ca.map((v,j)=>Math.round(v+(cb[j]-v)*u)); } } return skyStopsD[skyStopsD.length-1][1]; }
+let tickEl={}, lastTick=null, tickTimer=0, speedK=1;
+function showTick(k){
+  const s=tickEl[k]; if(!s) return;
+  for(const kk in tickEl) tickEl[kk].classList.remove('on','below');
+  const b=s.querySelector('b'); b.style.marginLeft='0px';
+  s.classList.add('on');
+  // 신청 버튼과 겹치면 이름표를 버튼 옆으로 비켜 세움
+  const fab=$('#fab'), fr=fab.getBoundingClientRect(); let lb=b.getBoundingClientRect();
+  const hit=r=>!(r.right<fr.left-8||r.left>fr.right+8||r.bottom<fr.top-4||r.top>fr.bottom+4);
+  if(fab.classList.contains('on') && hit(lb)){
+    const cx=(lb.left+lb.right)/2, fc=(fr.left+fr.right)/2;
+    const shift=cx>=fc ? (fr.right+10-lb.left) : (fr.left-10-lb.right);
+    if(lb.left+shift>=6 && lb.right+shift<=innerWidth-6) b.style.marginLeft=shift+'px'; else s.classList.add('below');
+  }
+  clearTimeout(tickTimer); tickTimer=setTimeout(()=>s.classList.remove('on'),1800);
+}
 let lastFrame=-1,lastPos=-1;
 function render(force){
   const t=pos/maxPos;
@@ -671,11 +737,17 @@ function render(force){
   const cx=charX-(1-ease)*(charX+dw*1.05);
   cv.style.left=cx+'px';
   world.style.transform='translate3d('+(-pos)+'px,0,0)';
+  range.style.transform='translate3d('+(-pos*0.12)+'px,0,0)';
+  clouds.style.transform='translate3d('+(-pos*0.05)+'px,0,0)';
   far.style.transform='translate3d('+(-pos*0.25)+'px,0,0)';
   near.style.transform='translate3d('+(-pos*0.55)+'px,0,0)';
   const roadStart=front+4, reveal=Math.min(worldW-roadStart, W*0.08+pos*3.2);
   road.style.left=roadStart+'px'; road.style.width=Math.max(0,reveal)+'px';
-  const c=skyAt(t); sky.style.background='linear-gradient(rgb('+c.join(',')+'),var(--paper) 72%)';
+  if(W>=760){ const c=skyAtD(t); sky.style.background='linear-gradient(rgb('+c.join(',')+'),var(--paper) 80%)'; }
+  else { const c=skyAt(t); sky.style.background='linear-gradient(rgb('+c.join(',')+'),var(--paper) 72%)'; }
+  // 진행 막대: 지점을 지날 때 이름이 잠깐 보임
+  let near_=null; for(const k in tickEl){ if(Math.abs(pos-stops[k])<gap*0.12){ near_=k; break; } }
+  if(near_&&near_!==lastTick){ showTick(near_); } lastTick=near_;
   barfill.style.width=(t*100)+'%';
   // walk frame follows distance travelled; stand still when not moving
   const stride=dw*1.1;
@@ -713,8 +785,8 @@ function tick(now){
     lastInput=0; gestureFrom=null;
   }
   const diff=target-pos;
-  let step=reduce?diff:diff*0.021;
-  const cap=Math.max(1.5,W*0.0055);
+  let step=reduce?diff:diff*0.021*speedK;
+  const cap=Math.max(1.5,W*0.0055)*speedK;
   if(step>cap) step=cap; if(step<-cap) step=-cap;
   if(Math.abs(diff)<0.4){ pos=target; } else pos+=step;
   if(pos!==lastPos){ render(false); lastPos=pos; }
