@@ -748,8 +748,11 @@ function render(force){
   if(near_&&near_!==lastTick){ showTick(near_); } lastTick=near_;
   barfill.style.width=(t*100)+'%';
   // walk frame follows distance travelled; stand still when not moving
-  const stride=dw*1.1;
-  const f=((Math.floor(pos/stride*N)%N)+N)%N;
+  // one loop of the drawing = the distance a planted foot travels back over 50 frames (measured: ~11.5px of 610 per frame)
+  // the walkers' own slide-in at the start counts too, so feet stay planted on the road the whole way
+  const stride=dw*0.94;
+  const walked=pos+(cx-charX);
+  const f=((Math.floor(walked/stride*N)%N)+N)%N;
   if(force||f!==lastFrame){ if(sprite.complete&&sprite.naturalWidth){ ctx.clearRect(0,0,dw,dh); ctx.drawImage(sprite,(f%COLS)*FW,Math.floor(f/COLS)*FH,FW,FH,0,0,dw,dh);} lastFrame=f; }
   // scenes fade in as the group reaches their marker
   scenes.forEach(s=>{
