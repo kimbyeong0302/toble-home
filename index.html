@@ -467,7 +467,7 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 
 <script>
 (function(){
-const FW=610,FH=342,COLS=5,N=50;
+const FW=610,FH=342,COLS=10,N=101;
 const sprite=new Image(); sprite.src="assets/walk.webp";
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 const range=$('#range'),clouds=$('#clouds');
@@ -748,9 +748,9 @@ function render(force){
   if(near_&&near_!==lastTick){ showTick(near_); } lastTick=near_;
   barfill.style.width=(t*100)+'%';
   // walk frame follows distance travelled; stand still when not moving
-  // one loop of the drawing = the distance a planted foot travels back over 50 frames (measured: ~11.5px of 610 per frame)
+  // one loop of the drawing (101 frames, every frame of the video at 24 fps) = the distance a planted foot travels back (measured: ~5.75px of 610 per frame)
   // the walkers' own slide-in at the start counts too, so feet stay planted on the road the whole way
-  const stride=dw*0.94;
+  const stride=dw*0.95;
   const walked=pos+(cx-charX);
   const f=((Math.floor(walked/stride*N)%N)+N)%N;
   if(force||f!==lastFrame){ if(sprite.complete&&sprite.naturalWidth){ ctx.clearRect(0,0,dw,dh); ctx.drawImage(sprite,(f%COLS)*FW,Math.floor(f/COLS)*FH,FW,FH,0,0,dw,dh);} lastFrame=f; }
