@@ -468,10 +468,11 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 <script>
 (function(){
 const FW=610,FH=342;
-// Each walker has its own seamless loop cut from the video at every frame (24 fps):
-// Talitha and Philo (tied by the rope) 58 frames; Eben 53 frames, starting with his arm fully forward and stopping one frame
-// before that pose comes round again (the repeat frame is left out), so the loop is one unbroken arm swing.
-const parts=[{src:"assets/walk-talitha.webp",x:0,w:395,cols:8,n:58},{src:"assets/walk-eben.webp",x:395,w:216,cols:10,n:53}];
+// Each walker has its own seamless loop, every frame of its video at 24 fps:
+// Talitha and Philo (tied by the rope) 58 frames; Eben 36 frames from his own video — one full arm swing that starts with
+// the arm fully back and stops one frame before that pose comes round again (the repeat frame is left out).
+// travel = how far a planted foot moves back per frame (in 610-wide units), so feet stay on the road.
+const parts=[{src:"assets/walk-talitha.webp",x:0,w:395,cols:8,n:58,travel:5.75},{src:"assets/walk-eben.webp",x:395,w:216,cols:9,n:36,travel:6.0}];
 parts.forEach(p=>{ p.img=new Image(); p.img.src=p.src; p.img.onload=()=>render(true); });
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 const range=$('#range'),clouds=$('#clouds');
@@ -752,14 +753,13 @@ function render(force){
   if(near_&&near_!==lastTick){ showTick(near_); } lastTick=near_;
   barfill.style.width=(t*100)+'%';
   // walk frame follows distance travelled; stand still when not moving
-  // a planted foot moves back about 5.75px (of 610) per video frame, so one frame = that much road
-  const perFrame=dw*5.75/FW;
-  const walked=pos+(cx-charX);
-  const step=Math.floor(walked/perFrame);
-  if(force||step!==lastFrame){ ctx.clearRect(0,0,dw,dh); const k=dw/FW;
-    for(const p of parts){ if(!(p.img.complete&&p.img.naturalWidth)) continue; const f=((step%p.n)+p.n)%p.n;
-      ctx.drawImage(p.img,(f%p.cols)*p.w,Math.floor(f/p.cols)*FH,p.w,FH,p.x*k,0,p.w*k,dh); }
-    lastFrame=step; }
+  const walked=pos+(cx-charX), k=dw/FW;
+  const fs=parts.map(p=>{ const f=Math.floor(walked/(p.travel*k)); return ((f%p.n)+p.n)%p.n; });
+  const key=fs.join(',');
+  if(force||key!==lastFrame){ ctx.clearRect(0,0,dw,dh);
+    parts.forEach((p,i)=>{ if(!(p.img.complete&&p.img.naturalWidth)) return; const f=fs[i];
+      ctx.drawImage(p.img,(f%p.cols)*p.w,Math.floor(f/p.cols)*FH,p.w,FH,p.x*k,0,p.w*k,dh); });
+    lastFrame=key; }
   // scenes fade in as the group reaches their marker
   scenes.forEach(s=>{
     const k=s.dataset.stop, sp=stops[k];
