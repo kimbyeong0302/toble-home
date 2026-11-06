@@ -626,11 +626,11 @@ function layout(){
   document.documentElement.style.setProperty('--sx',mobile?'0px':Math.round(charX+dw+130)+'px');
   document.documentElement.style.setProperty('--sb',(mobile?ROAD+dh+18:ROAD+28)+'px');
   front=charX+dw*0.93;
-  gap=Math.round(dw*0.78);
+  gap=Math.round(dw*0.75);
   // world stops: pos where the front of the group meets the marker
   stopList=[];
   let x=0;
-  order.forEach((k,i)=>{ if(i===0){stops[k]=0;} else { x+= subOf[k]?gap*0.75:gap; stops[k]=x; } stopList.push(stops[k]); });
+  order.forEach((k,i)=>{ if(i===0){stops[k]=0;} else { x+= gap; stops[k]=x; } stopList.push(stops[k]); });
   maxPos=stops.end; worldW=maxPos+W*1.6;
   world.style.width=worldW+'px';
   // markers
