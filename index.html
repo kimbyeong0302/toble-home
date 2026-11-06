@@ -467,8 +467,11 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 
 <script>
 (function(){
-const FW=610,FH=342,COLS=10,N=101;
-const sprite=new Image(); sprite.src="assets/walk.webp";
+const FW=610,FH=342;
+// Each walker has its own seamless loop cut from the video at every frame (24 fps):
+// Talitha and Philo (tied by the rope) 58 frames, Eben 53 frames — so Eben's arm swing never jumps at a loop seam.
+const parts=[{src:"assets/walk-talitha.webp",x:0,w:395,cols:8,n:58},{src:"assets/walk-eben.webp",x:395,w:216,cols:10,n:53}];
+parts.forEach(p=>{ p.img=new Image(); p.img.src=p.src; p.img.onload=()=>render(true); });
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 const range=$('#range'),clouds=$('#clouds');
 const view=$('#view'),world=$('#world'),far=$('#far'),near=$('#near'),road=$('#road'),dot=$('#dot'),sky=$('#sky');
@@ -748,12 +751,14 @@ function render(force){
   if(near_&&near_!==lastTick){ showTick(near_); } lastTick=near_;
   barfill.style.width=(t*100)+'%';
   // walk frame follows distance travelled; stand still when not moving
-  // one loop of the drawing (101 frames, every frame of the video at 24 fps) = the distance a planted foot travels back (measured: ~5.75px of 610 per frame)
-  // the walkers' own slide-in at the start counts too, so feet stay planted on the road the whole way
-  const stride=dw*0.95;
+  // a planted foot moves back about 5.75px (of 610) per video frame, so one frame = that much road
+  const perFrame=dw*5.75/FW;
   const walked=pos+(cx-charX);
-  const f=((Math.floor(walked/stride*N)%N)+N)%N;
-  if(force||f!==lastFrame){ if(sprite.complete&&sprite.naturalWidth){ ctx.clearRect(0,0,dw,dh); ctx.drawImage(sprite,(f%COLS)*FW,Math.floor(f/COLS)*FH,FW,FH,0,0,dw,dh);} lastFrame=f; }
+  const step=Math.floor(walked/perFrame);
+  if(force||step!==lastFrame){ ctx.clearRect(0,0,dw,dh); const k=dw/FW;
+    for(const p of parts){ if(!(p.img.complete&&p.img.naturalWidth)) continue; const f=((step%p.n)+p.n)%p.n;
+      ctx.drawImage(p.img,(f%p.cols)*p.w,Math.floor(f/p.cols)*FH,p.w,FH,p.x*k,0,p.w*k,dh); }
+    lastFrame=step; }
   // scenes fade in as the group reaches their marker
   scenes.forEach(s=>{
     const k=s.dataset.stop, sp=stops[k];
@@ -794,7 +799,6 @@ function tick(now){
   for(const f of flags){ const sx=f.x-pos; if(sx>-160&&sx<W+40) drawFlag(f,now); }
   requestAnimationFrame(tick);
 }
-sprite.onload=()=>render(true);
 addEventListener('resize',layout);
 layout(); requestAnimationFrame(tick);
 })();
