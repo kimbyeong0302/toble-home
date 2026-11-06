@@ -469,7 +469,8 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 (function(){
 const FW=610,FH=342;
 // Each walker has its own seamless loop cut from the video at every frame (24 fps):
-// Talitha and Philo (tied by the rope) 58 frames, Eben 53 frames — so Eben's arm swing never jumps at a loop seam.
+// Talitha and Philo (tied by the rope) 58 frames; Eben 53 frames, starting with his arm fully forward and stopping one frame
+// before that pose comes round again (the repeat frame is left out), so the loop is one unbroken arm swing.
 const parts=[{src:"assets/walk-talitha.webp",x:0,w:395,cols:8,n:58},{src:"assets/walk-eben.webp",x:395,w:216,cols:10,n:53}];
 parts.forEach(p=>{ p.img=new Image(); p.img.src=p.src; p.img.onload=()=>render(true); });
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
