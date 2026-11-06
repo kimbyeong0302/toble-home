@@ -626,16 +626,11 @@ function layout(){
   document.documentElement.style.setProperty('--sx',mobile?'0px':Math.round(charX+dw+130)+'px');
   document.documentElement.style.setProperty('--sb',(mobile?ROAD+dh+18:ROAD+28)+'px');
   front=charX+dw*0.93;
-  // 글 없이 걷는 시간을 이전의 2/3로 (걸음 속도는 그대로 두어 자연스럽게)
-  // 모바일: 지점 간격을 줄임 / 데스크톱: 깃발이 글과 겹치지 않게 간격은 두고, 글이 더 일찍 나타나 더 늦게 사라지게
-  gap=mobile?Math.max(W*1.05,560)*(2/3):Math.max(W*0.62,560);
-  fadeK=mobile?1:1.28;
+  gap=Math.max(mobile?W*1.05:W*0.62,560);
   // world stops: pos where the front of the group meets the marker
   stopList=[];
   let x=0;
   order.forEach((k,i)=>{ if(i===0){stops[k]=0;} else { x+= subOf[k]?gap*0.7:gap; stops[k]=x+W*0.25; } stopList.push(stops[k]); });
-  // 각 장면의 글이 보이는 폭: 가장 가까운 이웃 지점과의 거리 기준 (이웃 장면 글과 겹치지 않게)
-  order.forEach((k,i)=>{ const a=i>0?stopList[i]-stopList[i-1]:Infinity, b=i<order.length-1?stopList[i+1]-stopList[i]:Infinity; span[k]=Math.min(a,b,gap); });
   maxPos=stops.end; worldW=maxPos+W*1.6;
   world.style.width=worldW+'px';
   // markers
@@ -715,7 +710,7 @@ function skyAt(t){ for(let i=1;i<skyStops.length;i++){ const [a,ca]=skyStops[i-1
 // 데스크톱 하늘: 맑은 하늘색 -> 한낮 -> 늦은 오후
 const skyStopsD=[[0,[212,227,236]],[0.35,[219,233,241]],[0.75,[221,232,238]],[1,[236,226,212]]];
 function skyAtD(t){ for(let i=1;i<skyStopsD.length;i++){ const [a,ca]=skyStopsD[i-1],[b,cb]=skyStopsD[i]; if(t<=b){ const u=(t-a)/(b-a); return ca.map((v,j)=>Math.round(v+(cb[j]-v)*u)); } } return skyStopsD[skyStopsD.length-1][1]; }
-let tickEl={}, lastTick=null, tickTimer=0, fadeK=1; const span={};
+let tickEl={}, lastTick=null, tickTimer=0;
 function showTick(k){
   const s=tickEl[k]; if(!s) return;
   for(const kk in tickEl) tickEl[kk].classList.remove('on','below');
@@ -759,7 +754,7 @@ function render(force){
   // scenes fade in as the group reaches their marker
   scenes.forEach(s=>{
     const k=s.dataset.stop, sp=stops[k];
-    const d=(pos-sp)/(k===order[0]?gap*0.55:Math.max(gap*0.42,span[k]*0.42*fadeK));
+    const d=(pos-sp)/(k===order[0]?gap*0.55:gap*0.42);
     const a=Math.max(0,1-Math.abs(d)*1.15);
     const vis=a>0.01;
     s.style.opacity=a.toFixed(3);
