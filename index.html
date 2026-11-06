@@ -639,13 +639,14 @@ function layout(){
   maxPos=stops.end; worldW=maxPos+W*1.6;
   world.style.width=worldW+'px';
   // markers
+  entryLen=Math.min(charX+dw*1.05, gap*0.9);
   $$('.marker').forEach(e=>e.remove()); flags.length=0;
   let fi=0, si=0;
   order.slice(1).forEach(k=>{
     const m=document.createElement('div');
     m.className='marker'+(kind[k]==='stone'?' stone':'');
-    if(kind[k]==='stone'){ si++; const ch=Math.round(dh*(mobile?0.36:0.4)); m.innerHTML=cairnSVG(si*7+3,ch); m.style.left=(stops[k]+charX+dw+(mobile?2:18))+'px'; }
-    else { fi++; const fl=makeFlag(kind[k]==='end'?'':String(fi), Math.round(dh*(mobile?1.12:1.2)), mobile?56:84); m.appendChild(fl.wrap); fl.x=stops[k]+charX+dw+(mobile?4:14); m.style.left=fl.x+'px'; m.style.width='16px'; m.style.height=Math.round(dh*(mobile?1.12:1.2))+'px'; }
+    if(kind[k]==='stone'){ si++; const ch=Math.round(dh*(mobile?0.36:0.4)); m.innerHTML=cairnSVG(si*7+3,ch); m.style.left=(stops[k]-entryLen+charX+dw+(mobile?2:18))+'px'; }
+    else { fi++; const fl=makeFlag(kind[k]==='end'?'':String(fi), Math.round(dh*(mobile?1.12:1.2)), mobile?56:84); m.appendChild(fl.wrap); fl.x=stops[k]-entryLen+charX+dw+(mobile?4:14); m.style.left=fl.x+'px'; m.style.width='16px'; m.style.height=Math.round(dh*(mobile?1.12:1.2))+'px'; }
     world.appendChild(m);
   });
   dot.style.left=(front+4)+'px';
@@ -727,19 +728,20 @@ function showTick(k){
   }
   clearTimeout(tickTimer); tickTimer=setTimeout(()=>s.classList.remove('on'),1800);
 }
-let lastFrame=-1,lastPos=-1;
+let lastFrame=-1,lastPos=-1,wpos=0,entryLen=0;
 function render(force){
   const t=pos/maxPos;
   // intro: the group walks in from the left while the road draws out from the dot
-  const enter=Math.min(1,pos/(gap*0.5));
-  const ease=1-Math.pow(1-enter,3);
-  const cx=charX-(1-ease)*(charX+dw*1.05);
+  // the group walks in from the left at its normal walking pace while the road stays still;
+  // once they reach their place, the road starts to move under them instead
+  const cx=charX-Math.max(0,entryLen-pos);
+  wpos=Math.max(0,pos-entryLen);
   cv.style.left=cx+'px';
-  world.style.transform='translate3d('+(-pos)+'px,0,0)';
-  range.style.transform='translate3d('+(-pos*0.12)+'px,0,0)';
-  clouds.style.transform='translate3d('+(-pos*0.05)+'px,0,0)';
-  far.style.transform='translate3d('+(-pos*0.25)+'px,0,0)';
-  near.style.transform='translate3d('+(-pos*0.55)+'px,0,0)';
+  world.style.transform='translate3d('+(-wpos)+'px,0,0)';
+  range.style.transform='translate3d('+(-wpos*0.12)+'px,0,0)';
+  clouds.style.transform='translate3d('+(-wpos*0.05)+'px,0,0)';
+  far.style.transform='translate3d('+(-wpos*0.25)+'px,0,0)';
+  near.style.transform='translate3d('+(-wpos*0.55)+'px,0,0)';
   const roadStart=front+4, reveal=Math.min(worldW-roadStart, W*0.08+pos*3.2);
   road.style.left=roadStart+'px'; road.style.width=Math.max(0,reveal)+'px';
   { const k=skyAt(t), mix=(a,b,u)=>a.map((v,i)=>Math.round(v+(b[i]-v)*u));
@@ -753,7 +755,7 @@ function render(force){
   if(near_&&near_!==lastTick){ showTick(near_); } lastTick=near_;
   barfill.style.width=(t*100)+'%';
   // walk frame follows distance travelled; stand still when not moving
-  const walked=pos+(cx-charX), k=dw/FW;
+  const walked=pos, k=dw/FW;
   const fs=parts.map(p=>{ const f=Math.floor(walked/(p.travel*k)); return ((f%p.n)+p.n)%p.n; });
   const key=fs.join(',');
   if(force||key!==lastFrame){ ctx.clearRect(0,0,dw,dh);
@@ -797,7 +799,7 @@ function tick(now){
   if(step>cap) step=cap; if(step<-cap) step=-cap;
   if(Math.abs(diff)<0.4){ pos=target; } else pos+=step;
   if(pos!==lastPos){ render(false); lastPos=pos; }
-  for(const f of flags){ const sx=f.x-pos; if(sx>-160&&sx<W+40) drawFlag(f,now); }
+  for(const f of flags){ const sx=f.x-wpos; if(sx>-160&&sx<W+40) drawFlag(f,now); }
   requestAnimationFrame(tick);
 }
 addEventListener('resize',layout);
