@@ -120,9 +120,14 @@ ul.vows li::before{content:"";position:absolute;left:0;top:.62em;width:8px;heigh
 /* hint + progress */
 .hint{position:fixed;z-index:12;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 46px);text-align:center;font-size:13px;color:var(--muted);pointer-events:none;transition:opacity .5s}
 .hint b{color:var(--olive);font-weight:500}
-.bar{position:fixed;z-index:12;left:max(24px,env(safe-area-inset-left,0px));right:max(24px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 22px);height:2px;background:var(--line)}
+.bar{position:fixed;z-index:26;left:max(24px,env(safe-area-inset-left,0px));right:max(24px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 22px);height:2px;background:var(--line)}
 .bar i{display:block;height:100%;width:0;background:var(--olive)}
-.bar s{position:absolute;top:-3px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--paper);border:1px solid var(--olive-2);text-decoration:none}
+.bar s{position:absolute;top:-3px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--paper);border:1px solid var(--olive-2);text-decoration:none;cursor:pointer;padding:0;box-sizing:border-box}
+.bar s::after{content:"";position:absolute;left:-8px;right:-8px;top:-10px;bottom:-10px}
+.bar s.minor{top:-2px;width:6px;height:6px;margin-left:-3px;border-color:var(--muted)}
+.bar s:hover b,.bar s:focus-visible b{opacity:1;transform:translate(-50%,0)}
+.bar s:hover b.r,.bar s:focus-visible b.r{transform:none}
+.bar s:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
 .bar s b{position:absolute;left:50%;bottom:14px;transform:translate(-50%,4px);white-space:nowrap;font:500 13px/1 var(--body);color:var(--ink);background:var(--paper);border:1px solid var(--line);padding:5px 9px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;box-shadow:0 2px 8px rgba(36,37,31,.08)}
 .bar s b.r{left:auto;right:-6px;transform:translate(0,4px)}
 .bar s.on b{opacity:1;transform:translate(-50%,0)}
@@ -668,20 +673,47 @@ function layout(){
   // progress ticks
   $$('.bar s').forEach(e=>e.remove()); tickEl={};
   const names={}; $$('nav button[data-go]').forEach(b=>names[b.dataset.go]=b.textContent.trim()); names.end='길 끝에서';
-  ['belief','fence','story','study','think','hope','maker','end'].forEach(k=>{const s=document.createElement('s');const pct=stops[k]/maxPos*100;s.style.left=pct+'%';const b=document.createElement('b');b.textContent=names[k]||'';if(pct>92)b.className='r';s.appendChild(b);bar.appendChild(s);tickEl[k]=s;});
+  const extra={o1:'심히 좋았더라',o2:'토브',o3:'성경을 톺아보다',intro:'한 사람이',home:'토블이 있는 이유'};
+  const sceneName=k=>{ const sc=document.querySelector('.scene[data-stop="'+k+'"]'); if(!sc) return ''; const q=sc.querySelector('.q'); if(q) return q.textContent.trim();
+    const h=sc.querySelector('h2'); if(h) return h.innerHTML.replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim(); const e=sc.querySelector('.eyebrow'); return e?e.textContent.split('·').pop().trim():''; };
+  order.forEach(k=>{const s=document.createElement('s');const pct=stops[k]/maxPos*100;s.style.left=pct+'%';
+    const major=k in names; if(!major) s.className='minor';
+    s.tabIndex=0; s.setAttribute('role','button');
+    const label=names[k]||extra[k]||sceneName(k); s.setAttribute('aria-label',label+'(으)로 이동');
+    const b=document.createElement('b');b.textContent=label;if(pct>92)b.className='r';if(pct<6)b.style.cssText='left:-6px;transform:none';s.appendChild(b);
+    s.addEventListener('click',e=>{e.stopPropagation();jumpTo(k);});
+    s.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); jumpTo(k);} });
+    bar.appendChild(s);tickEl[k]=s;});
   pos=Math.min(pos,maxPos); target=Math.min(target,maxPos);
   render(true);
 }
 
 let gestureFrom=null;
 function nudge(d){ if(gestureFrom===null) gestureFrom=target; target=Math.max(0,Math.min(maxPos,target+d)); lastInput=performance.now(); hint.style.opacity=0; }
-addEventListener('wheel',e=>{ if(!$('#sheet').hidden) return; e.preventDefault(); const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY; nudge(d*(e.deltaMode===1?32:1)*1.8); },{passive:false});
+// one scroll = one scene, however hard or long the wheel/trackpad scroll is.
+// A new scroll starts only after the wheel has been quiet for a moment (trackpad momentum counts as the same scroll).
+let wheelAt=0;
+function stepScene(dir){
+  const base=target;
+  const k = dir>0 ? stopList.findIndex(v=>v>base+1) : stopList.map((v,i)=>[v,i]).filter(([v])=>v<base-1).map(([,i])=>i).pop();
+  if(k===undefined||k<0) return;
+  target=stopList[k]; lastInput=0; gestureFrom=null; hint.style.opacity=0;
+}
+addEventListener('wheel',e=>{ if(!$('#sheet').hidden) return; e.preventDefault();
+  const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY, now=performance.now();
+  const fresh=now-wheelAt>320; wheelAt=now;
+  if(fresh&&Math.abs(d)>=2) stepScene(d>0?1:-1);
+},{passive:false});
 view.addEventListener('pointerdown',e=>{dragging={x:e.clientX,y:e.clientY,id:e.pointerId};view.classList.add('drag');try{view.setPointerCapture(e.pointerId)}catch(_){}});
-view.addEventListener('pointermove',e=>{ if(!dragging) return; const dx=e.clientX-dragging.x, dy=e.clientY-dragging.y; dragging.x=e.clientX; dragging.y=e.clientY; nudge(-(Math.abs(dx)>Math.abs(dy)?dx:dy)*1.6); });
-const endDrag=()=>{dragging=null;view.classList.remove('drag');lastInput=performance.now();};
+view.addEventListener('pointermove',e=>{ if(!dragging) return; dragging.mx=e.clientX; dragging.my=e.clientY; });
+// one swipe or drag = one scene, however long the swipe is
+const endDrag=e=>{ if(dragging){ const ex=(e&&e.clientX!=null)?e.clientX:(dragging.mx??dragging.x), ey=(e&&e.clientY!=null)?e.clientY:(dragging.my??dragging.y);
+    const dx=ex-dragging.x, dy=ey-dragging.y, d=Math.abs(dx)>Math.abs(dy)?dx:dy;
+    if(Math.abs(d)>30) stepScene(d<0?1:-1); }
+  dragging=null; view.classList.remove('drag'); };
 view.addEventListener('pointerup',endDrag); view.addEventListener('pointercancel',endDrag);
 // touch on scene text should also move the road
-$$('.scene').forEach(s=>{ s.addEventListener('pointerdown',e=>{ if(e.target.closest('button,a')) return; dragging={x:e.clientX,y:e.clientY}; }); s.addEventListener('pointermove',e=>{ if(!dragging) return; const dx=e.clientX-dragging.x, dy=e.clientY-dragging.y; dragging.x=e.clientX; dragging.y=e.clientY; nudge(-(Math.abs(dx)>Math.abs(dy)?dx:dy)*1.6); }); s.addEventListener('pointerup',endDrag); s.addEventListener('pointercancel',endDrag); s.style.touchAction='none'; });
+$$('.scene').forEach(s=>{ s.addEventListener('pointerdown',e=>{ if(e.target.closest('button,a')) return; dragging={x:e.clientX,y:e.clientY}; }); s.addEventListener('pointermove',e=>{ if(!dragging) return; dragging.mx=e.clientX; dragging.my=e.clientY; }); s.addEventListener('pointerup',endDrag); s.addEventListener('pointercancel',endDrag); s.style.touchAction='none'; });
 addEventListener('keydown',e=>{
   if(e.target.closest&&e.target.closest('button,a')&&(e.key===' '||e.key==='Enter')) return;
   if(!$('#sheet').hidden){ if(e.key==='Escape') closeSheet(); return; }
