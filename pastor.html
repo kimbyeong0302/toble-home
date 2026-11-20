@@ -220,37 +220,33 @@ footer a{color:var(--olive);text-decoration:none}
 .havruta li{font:500 14px/1 var(--body);padding:9px 14px;border-radius:999px;background:var(--card);border:1px solid var(--olive-2);color:var(--olive)}
 .havruta .src{margin-top:14px}
 
-/* scene parts */
-#flowSvg .scene{opacity:0;transition:opacity .6s ease;pointer-events:none}
-#flowSvg .scene.on{opacity:1}
-#flowSvg .pop{opacity:0;transform-box:fill-box;transform-origin:50% 100%}
-#flowSvg .scene.on .pop{animation:pop .5s cubic-bezier(.3,1.4,.5,1) forwards;animation-delay:var(--d,0s)}
-@keyframes pop{from{opacity:0;transform:scale(.6) translateY(8px)}to{opacity:1;transform:none}}
-#flowSvg .chip{fill:#ecebe4;transition:fill .4s}
-#flowSvg .scene.on .chip{animation:chipOn .4s forwards;animation-delay:var(--d,0s)}
-@keyframes chipOn{to{fill:#8a9653}}
-#flowSvg .scene.on .chipT{animation:chipT .4s forwards;animation-delay:var(--d,0s)}
-@keyframes chipT{to{fill:#fff}}
-#flowSvg .stand{transform-box:fill-box;transform-origin:50% 100%}
-#flowSvg .scene.on .stand{animation:stand .6s ease forwards;animation-delay:var(--d,0s)}
-@keyframes stand{to{transform:translateY(-22px)}}
-#flowSvg .glow{transform-box:fill-box;transform-origin:50% 50%;opacity:0}
-#flowSvg .scene.on .glow{animation:glow 3.2s ease forwards;animation-delay:var(--d,0s)}
-@keyframes glow{0%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.05)}100%{opacity:1;transform:scale(1)}}
-#flowSvg .drift{opacity:0}
-#flowSvg .scene.on .drift{animation:drift 2.4s ease-in forwards;animation-delay:var(--d,0s)}
-@keyframes drift{0%{opacity:0;transform:translate(0,0)}25%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
-#flowSvg .nod{transform-box:fill-box;transform-origin:50% 100%}
-#flowSvg .scene.on .nod{animation:nod 1.6s ease-in-out infinite;animation-delay:var(--d,0s)}
-@keyframes nod{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg)}}
-
-@media (max-width:820px){
-  .fsteps button{font-size:12px}
-  .fsteps button span{display:none}
-}
+/* scene parts: watercolor pictures with gentle motion and overlays */
+.anim{container-type:inline-size;background:#fff}
+.stage{position:relative;aspect-ratio:1170/636;overflow:hidden}
+.fscene{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;pointer-events:none}
+.fscene.on{opacity:1}
+.fscene img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:scale(1.0);transform-origin:var(--o,50% 60%)}
+.fscene.on img{animation:drift 9s ease-out forwards}
+@keyframes drift{to{transform:scale(1.05)}}
+.ov{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-100%);opacity:0}
+.fscene.on .ov{animation:ovIn .55s cubic-bezier(.3,1.35,.5,1) forwards;animation-delay:var(--d,0s)}
+@container (max-width:620px){.ov.opt{display:none}.days6{left:38%!important}.ov.m1{top:36%!important;left:86%!important}.ov.s4top{left:34%!important;top:20%!important;--tx:88%!important}}
+@keyframes ovIn{from{opacity:0;transform:translate(-50%,-100%) translateY(10px) scale(.85)}to{opacity:1;transform:translate(-50%,-100%)}}
+.bub{font:500 clamp(10px,1.75cqw,17px)/1.3 var(--body);color:var(--ink);background:#fff;border:1.5px solid var(--olive-2);border-radius:999px;padding:.55em 1em;white-space:nowrap;box-shadow:0 4px 14px rgba(60,70,30,.10)}
+.bub.w{background:var(--wash)}
+.bub::after{content:"";position:absolute;left:var(--tx,50%);bottom:-7px;width:10px;height:10px;background:inherit;border-right:1.5px solid var(--olive-2);border-bottom:1.5px solid var(--olive-2);transform:translateX(-50%) rotate(45deg)}
+.days6{position:absolute;left:24%;top:6%;transform:translateX(-50%);display:flex;gap:clamp(4px,.8cqw,8px)}
+.days6 span{font:700 clamp(10px,1.6cqw,15px)/1 var(--body);color:var(--muted);background:#f1f0ea;border-radius:8px;padding:.55em .8em}
+.fscene.on .days6 span{animation:dayOn .4s forwards;animation-delay:var(--d)}
+@keyframes dayOn{to{background:#8a9653;color:#fff}}
+.glow{position:absolute;left:var(--x);top:var(--y);width:24cqw;height:24cqw;border-radius:50%;transform:translate(-50%,-50%) scale(.3);background:radial-gradient(circle,rgba(255,230,150,.75),rgba(255,230,150,0) 65%);opacity:0;mix-blend-mode:multiply}
+.fscene.on .glow{animation:glow 4s ease forwards;animation-delay:var(--d)}
+@keyframes glow{60%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:.85;transform:translate(-50%,-50%) scale(1)}}
 @media (prefers-reduced-motion:reduce){
-  #flowSvg .scene.on .pop,#flowSvg .scene.on .chip,#flowSvg .scene.on .chipT,#flowSvg .scene.on .stand,#flowSvg .scene.on .glow,#flowSvg .scene.on .drift,#flowSvg .scene.on .nod{animation-duration:.01s;animation-delay:0s;animation-iteration-count:1}
+  .fscene.on img{animation:none}
+  .fscene.on .ov,.fscene.on .days6 span,.fscene.on .glow{animation-duration:.01s;animation-delay:0s}
 }
+
 </style>
 </head>
 <body>
@@ -383,10 +379,35 @@ footer a{color:var(--olive);text-decoration:none}
     <p class="k">아이들의 한 주와 주일</p>
     <h2>말씀이 아이 마음에 머물기까지</h2>
     <p class="lead">집에서 판 말씀을 들고 와서, 친구들과 묻고 답하고, 교역자에게 답을 듣습니다. 다섯 장면으로 보여 드릴게요.</p>
-    <div class="anim"><svg id="flowSvg" viewBox="0 0 800 440" role="img" aria-label="주중 연구에서 주일 공과와 설교까지 다섯 장면 애니메이션"></svg></div>
+    <div class="anim"><div class="stage" id="flowStage" role="img" aria-label="주중 연구에서 주일 공과와 설교까지 다섯 장면">
+      <div class="fscene" style="--o:45% 70%"><img src="assets/flow/flow-1.webp" alt="" loading="lazy">
+        <div class="days6 d6"><span style="--d:.3s">월</span><span style="--d:.8s">화</span><span style="--d:1.3s">수</span><span style="--d:1.8s">목</span><span style="--d:2.3s">금</span><span style="--d:2.8s">토</span></div>
+        <span class="ov bub opt" style="--x:34%;--y:24%;--d:3.4s">여기 왜 이렇게 썼을까?</span>
+        <span class="ov bub w m1" style="--x:82%;--y:20%;--d:4.6s;--tx:30%">같이 찾아보자</span>
+      </div>
+      <div class="fscene" style="--o:50% 60%"><img src="assets/flow/flow-2.webp" alt="" loading="lazy">
+        <span class="ov bub opt" style="--x:16%;--y:30%;--d:.6s">왜 그랬을까?</span>
+        <span class="ov bub w" style="--x:40%;--y:33%;--d:1.6s">3절에 근거가 있어!</span>
+        <span class="ov bub opt" style="--x:66%;--y:33%;--d:2.8s">내 생각은 달라</span>
+        <span class="ov bub w" style="--x:84%;--y:24%;--d:3.9s">앞 절을 다시 보자</span>
+      </div>
+      <div class="fscene" style="--o:50% 40%"><img src="assets/flow/flow-3.webp" alt="" loading="lazy">
+        <span class="ov bub" style="--x:50%;--y:16%;--d:.8s">이 말은 왜 세 번이나 나올까?</span>
+        <span class="ov bub w opt" style="--x:84%;--y:28%;--d:2.4s">우리 모둠은 이렇게 봤어</span>
+        <span class="ov bub w opt" style="--x:18%;--y:42%;--d:3.6s">우리도 그게 궁금했어</span>
+      </div>
+      <div class="fscene" style="--o:65% 40%"><img src="assets/flow/flow-4.webp" alt="" loading="lazy">
+        <span class="ov bub w s4top" style="--x:52%;--y:12%;--d:.8s;--tx:82%">이 본문은 이렇게 말해요</span>
+        <span class="ov bub opt" style="--x:42%;--y:30%;--d:2.4s">아하!</span>
+        <span class="ov bub" style="--x:86%;--y:46%;--d:3.6s">그래서 그랬구나</span>
+      </div>
+      <div class="fscene" style="--o:62% 50%"><img src="assets/flow/flow-5.webp" alt="" loading="lazy">
+        <span class="glow" style="--x:57%;--y:55%;--d:1s"></span>
+      </div>
+    </div></div>
     <ol class="fsteps" id="fsteps">
       <li><button type="button"><i></i><b>1</b><span>집에서 일주일</span></button></li>
-      <li><button type="button"><i></i><b>2</b><span>모둠 하브루타</span></button></li>
+      <li><button type="button"><i></i><b>2</b><span>모둠 토론</span></button></li>
       <li><button type="button"><i></i><b>3</b><span>모두 앞에서</span></button></li>
       <li><button type="button"><i></i><b>4</b><span>교역자의 말씀</span></button></li>
       <li><button type="button"><i></i><b>5</b><span>마음에 머묾</span></button></li>
@@ -479,102 +500,38 @@ footer a{color:var(--olive);text-decoration:none}
   document.getElementById('toTop').addEventListener('click',e=>{e.preventDefault();scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});
 })();
 
-/* five scenes: home week, havruta in small groups, sharing with everyone, the pastor's message, the word staying */
+/* five scenes: home week, small-group questions, sharing with everyone, the pastor's message, the word staying */
 (function(){
-  const svg=document.getElementById('flowSvg'); if(!svg) return;
-  const C={skin:'#e9cfb2',hair:'#3b3129',olive:'#5f6d2c',olive2:'#8a9653',navy:'#3e4a63',ochre:'#c4a052',sand:'#b9a98c',grey:'#cfcdc3',ink:'#24251f',soft:'#55564c',wood:'#d9c9ab',flag:'#b5483a',paper:'#fbfaf4',wash:'#eef0e3'};
-  const kid=(x,y,s,body,o={})=>`<g transform="translate(${x} ${y}) scale(${s})" class="${o.cls||''}" style="${o.d!=null?'--d:'+o.d+'s':''}">
-    <path d="M-23 44 Q-23 9 0 9 Q23 9 23 44 Z" fill="${body}"/>
-    <circle cy="-9" r="15" fill="${C.skin}"/>
-    <path d="M-15.5 -11 Q-15 -27 0 -26 Q15 -27 15.5 -11 Q8 -19 0 -18 Q-8 -19 -15.5 -11Z" fill="${o.hair||C.hair}"/>
-    ${o.braid?`<path d="M13 -12 Q20 2 15 16" stroke="${o.hair||C.hair}" stroke-width="5" fill="none" stroke-linecap="round"/>`:''}
-  </g>`;
-  const bible=(x,y,w,o={})=>{const h=w*.55;return `<g transform="translate(${x} ${y})"><path d="M0 0 Q${-w*.25} ${-h*.18} ${-w/2} ${-h*.06} L${-w/2} ${h*.8} Q${-w*.25} ${h*.68} 0 ${h*.86}Z" fill="${C.paper}" stroke="${C.sand}" stroke-width="1.5"/><path d="M0 0 Q${w*.25} ${-h*.18} ${w/2} ${-h*.06} L${w/2} ${h*.8} Q${w*.25} ${h*.68} 0 ${h*.86}Z" fill="${C.paper}" stroke="${C.sand}" stroke-width="1.5"/>${[.18,.34,.5].map(t=>`<path d="M${-w*.42} ${h*t} H${-w*.08} M${w*.08} ${h*t} H${w*.42}" stroke="#d8d3c2" stroke-width="2"/>`).join('')}</g>`;};
-  const flag=(x,y,d,s=1,still)=>`<g transform="translate(${x} ${y}) scale(${s})"><g${still?'':` class="pop" style="--d:${d}s"`}><path d="M0 0 V-22" stroke="${C.ink}" stroke-width="2"/><path d="M0 -22 L13 -17 L0 -12Z" fill="${C.flag}"/></g></g>`;
-  const bubble=(x,y,t,d,o={})=>{const fs=o.fs||21,w=Math.max(46,t.length*fs*.98+26),h=fs+20,tx=o.tail||0;return `<g transform="translate(${x} ${y})"><g class="pop" style="--d:${d}s"><path d="M${-w/2} ${-h} h${w} a10 10 0 0 1 10 10 v${h-20} a10 10 0 0 1 -10 10 H${tx+8} l${-8} 10 l${-6} -10 H${-w/2} a10 10 0 0 1 -10 -10 v${-(h-20)} a10 10 0 0 1 10 -10z" fill="${o.fill||'#fff'}" stroke="${o.stroke||C.olive2}" stroke-width="1.6"/><text x="0" y="${-h/2+fs*.36}" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-weight="500" font-size="${fs}" fill="${o.color||C.ink}">${t}</text></g></g>`;};
-  const label=(x,y,t,o={})=>`<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-family="${o.serif?'Gowun Batang, serif':'Noto Sans KR, sans-serif'}" font-weight="${o.w||500}" font-size="${o.fs||18}" fill="${o.c||C.soft}">${t}</text>`;
-  const floor=`<path d="M0 392 H800" stroke="${C.line||'#e2e2d8'}" stroke-width="2"/>`;
-
-  // 1 · home
-  const days=['월','화','수','목','금','토'];
-  let s1=`<rect x="0" y="0" width="800" height="440" fill="#fbfaf6"/>`;
-  s1+=days.map((d,i)=>`<g><rect class="chip" style="--d:${.2+i*.55}s" x="${208+i*66}" y="34" width="54" height="40" rx="10"/><text class="chipT" style="--d:${.2+i*.55}s" x="${235+i*66}" y="61" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-weight="700" font-size="19" fill="${C.soft}">${d}</text></g>`).join('');
-  s1+=kid(300,250,1.25,C.navy,{braid:true})+kid(505,232,1.5,C.olive2);
-  s1+=`<rect x="170" y="300" width="460" height="20" rx="7" fill="${C.wood}"/><rect x="200" y="320" width="12" height="72" fill="${C.wood}"/><rect x="588" y="320" width="12" height="72" fill="${C.wood}"/>`;
-  s1+=bible(400,262,170);
-  s1+=flag(352,286,1.6)+flag(448,280,2.8)+flag(470,300,3.8);
-  s1+=bubble(240,166,'?',1.2,{fs:26})+bubble(560,140,'같이 찾아보자',2.4,{fs:19})+bubble(240,166,'!',4.2,{fs:26,fill:C.wash});
-  s1+=floor;
-
-  // 2 · havruta in small groups
-  const g2=(cx,qs,d0,colors)=>{let g=`<ellipse cx="${cx}" cy="330" rx="88" ry="16" fill="#efe6d4"/>`+bible(cx,300,70)+flag(cx+18,316,d0,.8);
-    g+=kid(cx-62,262,.95,colors[0])+kid(cx+62,262,.95,colors[1],{braid:true})+kid(cx,236,.85,colors[2]);
-    qs.forEach((q,i)=>{g+=bubble(cx+(i%2?28:-28),i%2?196:150,q,d0+.5+i*1.1,{fs:17,tail:i%2?-20:20,fill:i%2?C.wash:'#fff'});});return g;};
-  let s2=`<rect x="0" y="0" width="800" height="440" fill="#fbfaf6"/>`;
-  s2+=g2(150,['왜 그랬을까?','3절에 있어!'],.2,[C.navy,C.ochre,C.olive2]);
-  s2+=g2(400,['내 생각은 달라','어디서 봤어?'],.8,[C.olive,C.navy,C.ochre]);
-  s2+=g2(650,['이 말은 무슨 뜻?','앞을 다시 보자'],1.4,[C.ochre,C.olive2,C.navy]);
-  s2+=label(400,420,'둘씩, 셋씩 짝을 지어 서로 묻고 답합니다',{fs:17,c:C.muted||'#8b8c80'});
-
-  // 3 · sharing with everyone
-  const board=(cards,checks)=>{let b=`<rect x="230" y="26" width="340" height="190" rx="12" fill="#3f4733"/><rect x="230" y="26" width="340" height="190" rx="12" fill="none" stroke="#2f3526" stroke-width="4"/>`+label(400,62,'아직 못 푼 질문',{fs:19,c:'#e6e9d6',w:700});
-    cards.forEach((c,i)=>{b+=`<g class="pop" style="--d:${c.d}s"><rect x="254" y="${80+i*42}" width="292" height="34" rx="6" fill="${C.paper}"/>${flag(270,108+i*42,0,.7,true)}${label(288,103+i*42,c.t,{a:'start',fs:17,c:C.ink})}</g>`;
-      if(checks) b+=`<g class="pop" style="--d:${checks[i]}s"><circle cx="528" cy="${97+i*42}" r="11" fill="${C.olive2}"/><path d="M522 ${97+i*42} l4 4 l8 -8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/></g>`;});return b;};
-  const qs=[{t:'왜 같은 말이 세 번 나올까?'},{t:'이 약속은 누구에게 한 말일까?'},{t:'그럼 지금 우리에게는?'}];
-  let s3=`<rect x="0" y="0" width="800" height="440" fill="#fbfaf6"/>`+board(qs.map((q,i)=>({t:q.t,d:1.1+i*1.2})));
-  const row=(y,s,cols)=>cols.map(([x,c],i)=>kid(x,y,s,c,{braid:i%2})).join('');
-  [[150,[C.navy,C.ochre,C.olive2]],[400,[C.olive,C.navy,C.ochre]],[650,[C.ochre,C.olive2,C.navy]]].forEach(([cx,cols],gi)=>{
-    s3+=row(338,.82,[[cx-50,cols[0]],[cx+50,cols[2]]]);
-    s3+=`<g class="stand" style="--d:${.6+gi*1.2}s">${kid(cx,330,.9,cols[1])}${flag(cx+24,330,.6+gi*1.2+.3,1.1)}</g>`;
-  });
-  s3+=floor;
-
-  // 4 · the pastor's message
-  let s4=`<rect x="0" y="0" width="800" height="440" fill="#fbfaf6"/>`+board(qs.map(q=>({t:q.t,d:0})),[1.2,2.4,3.6]);
-  s4+=`<rect x="610" y="196" width="70" height="96" rx="6" fill="${C.wood}"/>`+kid(645,150,1.35,'#4a4f43',{hair:'#2b2620'})+bible(645,196,90);
-  s4+=bubble(668,104,'본문은 이렇게 말해요',1.0,{fs:16,tail:-10,fill:C.wash});
-  const seats=[[110,C.navy],[200,C.ochre],[290,C.olive2],[380,C.olive],[470,C.navy],[560,C.ochre]];
-  s4+=seats.map(([x,c],i)=>`<g class="nod" style="--d:${1.4+i*.3}s">${kid(x,350,.78,c,{braid:i%2})}</g>`).join('');
-  s4+=bubble(200,270,'아하!',2.8,{fs:18})+bubble(470,262,'그래서 그랬구나',3.9,{fs:16});
-  s4+=floor;
-
-  // 5 · the word stays
-  let s5=`<rect x="0" y="0" width="800" height="440" fill="#fbfaf6"/>`;
-  s5+=`<defs><radialGradient id="fg"><stop offset="0" stop-color="#e9d98a" stop-opacity=".95"/><stop offset=".55" stop-color="#c9cf8f" stop-opacity=".55"/><stop offset="1" stop-color="#c9cf8f" stop-opacity="0"/></radialGradient></defs>`;
-  s5+=kid(400,200,3.1,C.navy,{braid:true});
-  s5+=`<ellipse class="glow" style="--d:1.4s" cx="400" cy="300" rx="70" ry="56" fill="url(#fg)"/>`;
-  s5+=[[220,150,'--dx:160px;--dy:140px',.2],[590,130,'--dx:-170px;--dy:160px',.7],[250,330,'--dx:130px;--dy:-20px',1.2],[570,360,'--dx:-150px;--dy:-50px',1.6]].map(([x,y,v,d])=>`<g class="drift" style="${v};--d:${d}s"><path d="M${x-26} ${y} h52 M${x-26} ${y+12} h38" stroke="${C.olive2}" stroke-width="4" stroke-linecap="round"/></g>`).join('');
-  s5+=floor;
-
-  const scenes=[s1,s2,s3,s4,s5];
-  svg.innerHTML=scenes.map((s,i)=>`<g class="scene" data-i="${i}">${s}</g>`).join('');
+  const stage=document.getElementById('flowStage'); if(!stage) return;
+  const scenes=[...stage.querySelectorAll('.fscene')];
   const caps=[
     ['1. 집에서 일주일, 본문을 팝니다','함께 걷는 사람과 한 본문을 엿새 동안 읽고, 살피고, 뜻을 찾습니다. 궁금한 곳마다 깃발을 꽂아 두었다가 주일에 가져옵니다.'],
-    ['2. 삼삼오오 모여 묻고 답합니다','가져온 질문을 모둠 친구들과 나눕니다. "왜 그렇게 생각했어?", "근거는 몇째 절이야?" 서로 듣고, 묻고, 반박하며 말씀을 곱씹습니다. 하브루타의 방식입니다.'],
+    ['2. 삼삼오오 모여 묻고 답합니다','가져온 질문을 모둠 친구들과 나눕니다. "왜 그렇게 생각했어?", "근거는 몇째 절이야?" 서로 듣고, 묻고, 반박하며 말씀을 곱씹습니다.'],
     ['3. 풀리지 않은 질문은 모두 앞에서','모둠에서 끝내 풀지 못한 질문을 반 전체 앞에 내놓습니다. 다른 모둠의 생각이 더해지며 생각이 한 번 더 넓어집니다.'],
     ['4. 교역자가 함께 연구하며 풀어 줍니다','교역자는 같은 본문을 함께 연구한 사람으로서, 본문이 말하고자 하는 바를 전하고 아이들이 남긴 의문을 하나씩 풀어 줍니다.'],
     ['5. 말씀이 마음 깊은 곳에 머뭅니다','스스로 파고, 친구와 씨름하고, 답을 들은 말씀은 쉽게 잊히지 않습니다. 고민이 생긴 어느 날, 그 말씀이 다시 떠오릅니다.']
   ];
   const btns=[...document.querySelectorAll('#fsteps button')], play=document.getElementById('fplay');
-  const DUR=7000; let cur=-1, t0=0, playing=true, seen=false, raf=0;
+  const DUR=8000; let cur=0, t0=0, playing=true, seen=false;
   function show(i){
     cur=(i+scenes.length)%scenes.length;
-    svg.querySelectorAll('.scene').forEach(g=>{g.classList.remove('on'); if(+g.dataset.i===cur){ void g.getBoundingClientRect(); g.classList.add('on'); }});
-    btns.forEach((b,k)=>{b.setAttribute('aria-current',k===cur?'true':'false'); b.classList.toggle('done',k<cur); b.querySelector('i').style.width=k<cur?'100%':'0';});
+    scenes.forEach((g,k)=>{ g.classList.remove('on'); if(k===cur){ void g.offsetWidth; g.classList.add('on'); } });
+    btns.forEach((b,k)=>{ b.setAttribute('aria-current',k===cur?'true':'false'); b.classList.toggle('done',k<cur); b.querySelector('i').style.width=k<cur?'100%':'0'; });
     document.getElementById('fcapH').textContent=caps[cur][0]; document.getElementById('fcapP').textContent=caps[cur][1];
     t0=performance.now();
   }
   function loop(now){
     if(playing&&seen){ const p=Math.min(1,(now-t0)/DUR); btns[cur].querySelector('i').style.width=(p*100)+'%'; if(p>=1) show(cur+1); }
     else t0=now-(parseFloat(btns[cur].querySelector('i').style.width)||0)/100*DUR;
-    raf=requestAnimationFrame(loop);
+    requestAnimationFrame(loop);
   }
   btns.forEach((b,k)=>b.addEventListener('click',()=>show(k)));
-  play.addEventListener('click',()=>{playing=!playing; play.textContent=playing?'멈춤':'이어서 보기';});
+  play.addEventListener('click',()=>{ playing=!playing; play.textContent=playing?'멈춤':'이어서 보기'; });
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){ playing=false; play.textContent='이어서 보기'; }
+  stage.querySelectorAll('img').forEach(im=>im.loading='eager');
   show(0);
-  if('IntersectionObserver' in window){ new IntersectionObserver(es=>es.forEach(e=>{ const was=seen; seen=e.isIntersecting; if(seen&&!was) show(cur); }),{threshold:.35}).observe(svg); } else seen=true;
-  raf=requestAnimationFrame(loop);
+  if('IntersectionObserver' in window){ new IntersectionObserver(es=>es.forEach(e=>{ const was=seen; seen=e.isIntersecting; if(seen&&!was) show(cur); }),{threshold:.35}).observe(stage); } else seen=true;
+  requestAnimationFrame(loop);
 })();
 </script>
 </body>
