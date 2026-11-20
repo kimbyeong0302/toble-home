@@ -70,28 +70,25 @@ h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,4.2vw,44px);l
 .ph-i{background:#e4e8d0;color:#55602a}
 .ph-a{background:#cfd6ad;color:#3f4a17}
 .ph-c{background:var(--olive);color:var(--paper)}
-.days{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
-.days li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 12px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.days{list-style:none;margin:26px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.days li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 16px 20px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .days li.o{border-top:4px solid #c9cfa6}
 .days li.i{border-top:4px solid var(--olive-2)}
 .days li.a{border-top:4px solid #6f7d36}
 .days li.c{border-top:4px solid var(--olive);background:var(--wash);border-color:var(--olive-2)}
 .days .dd{font:700 13px/1 var(--body);color:var(--muted)}
 .days li.c .dd{color:var(--olive)}
-.days b{font-family:var(--display);font-size:17px;line-height:1.35}
-.days p{margin:0;font-size:13.5px;line-height:1.65;color:var(--soft)}
+.days b{font-family:var(--display);font-size:22px;line-height:1.35}
+.days p{margin:0;font-size:14.5px;line-height:1.65;color:var(--soft)}
 .wk-note{margin:16px 0 0;font-size:14px;color:var(--muted)}
 @media (max-width:960px){
   .phases{display:none}
   .days{grid-template-columns:1fr;gap:10px}
-  .days li{display:grid;grid-template-columns:3.2em 1fr;column-gap:12px;row-gap:4px;border-top-width:1px!important;border-left:4px solid #c9cfa6}
+  .days li{display:grid;grid-template-columns:4em 1fr;column-gap:12px;row-gap:4px;border-top-width:1px!important;border-left:4px solid #c9cfa6}
   .days li.i{border-left-color:var(--olive-2)}
   .days li.a{border-left-color:#6f7d36}
   .days li.c{border-left-color:var(--olive)}
   .days .dd{grid-row:1/3;padding-top:3px}
-  .days li.o .dd::after{content:'관찰';display:block;margin-top:6px;font-weight:500;color:#6b7440}
-  .days li.i .dd::after{content:'해석';display:block;margin-top:6px;font-weight:500;color:#55602a}
-  .days li.a .dd::after{content:'적용';display:block;margin-top:6px;font-weight:500;color:#3f4a17}
 }
 .weekbox h3{font-family:var(--display);font-size:clamp(21px,2.4vw,25px);margin:0}
 
@@ -283,19 +280,16 @@ footer a{color:var(--olive);text-decoration:none}
     </div>
     <p class="note">순서는 교회 형편에 맞게 정하시면 됩니다. 지금 순서 그대로 쓰셔도 가정과 주일이 같은 본문으로 이어집니다.</p>
     <div class="weekbox">
-      <h3>한 말씀으로 이어지는 일주일</h3>
-      <p class="wk-sub">예시 · 1권 1주, 이번 주 펼칠 곳 <b>잠언 2장 1–5절</b>. 날마다 도구 하나를 들고 같은 본문을 다시 폅니다.</p>
-      <div class="phases" aria-hidden="true"><span class="ph-o">관찰 · 무엇이 쓰여 있나</span><span class="ph-i">해석 · 무슨 뜻인가</span><span class="ph-a">적용 · 어떻게 살까</span><span class="ph-c">교회에서</span></div>
+      <h3>주중에 아이들은 이렇게 성경을 연구합니다</h3>
+      <p class="wk-sub">한 주에 한 본문. 날마다 이야기를 읽고, 이야기가 멈춘 자리에서 자기 성경을 폅니다.</p>
       <ol class="days">
-        <li class="o"><span class="dd">월</span><b>묶음 끈</b><p>본문을 소리 내어 끝까지 읽고 "누가 누구에게 하는 말일까?" 묻습니다. 이야기가 바뀌는 곳에 금을 그어 묶음을 나누고, 묶음마다 내 말로 이름을 붙입니다.</p></li>
-        <li class="o"><span class="dd">화</span><b>네모 틀</b><p>오려 둔 틀을 한 절 위에 대고 그 줄만 봅니다. 낱말을 하나도 빠짐없이 표시하고, 열 가지를 찾기 전에는 틀을 옮기지 않습니다.</p></li>
-        <li class="o"><span class="dd">수</span><b>발자국</b><p>다시 나오는 말을 찾아 몇 번, 몇째 절에 나오는지 셉니다. "이 말이 왜 되풀이될까?" 답이 없어도 궁금한 채로 둡니다.</p></li>
-        <li class="i"><span class="dd">목</span><b>겹쳐 보기 · 물음표 깃발</b><p>두 묶음을 번갈아 읽으며 같은 것과 다른 것, '그래서', '그러나' 같은 잇는 말을 찾습니다. 궁금한 곳마다 성경 여백에 빨간 깃발을 그립니다.</p></li>
-        <li class="i"><span class="dd">금</span><b>별 막대 · 이정표</b><p>깃발 하나를 골라 그 장의 앞뒤를 이어 읽으며 실마리를 찾습니다. 다른 책의 구절은 끌어오지 않습니다. 그리고 본문에서 나온 작은 실천 두 가지(나, 우리)를 세웁니다.</p></li>
-        <li class="a"><span class="dd">주말</span><b>돌 세우기 · 우리의 기도</b><p>가장 오래 붙든 한 줄을 카드에 적어 날마다 보이는 곳에 세우고, 알게 된 것과 남은 깃발을 떠올리며 짧은 기도문을 함께 씁니다.</p></li>
-        <li class="c"><span class="dd">주일</span><b>공과 → 설교</b><p>찾은 것을 공과에서 나누고, 끝내 풀지 못한 깃발은 교역자에게 가져옵니다. 설교가 그 깃발에 답합니다.</p></li>
+        <li class="o"><span class="dd">월</span><b>읽어요</b><p>본문을 소리 내어 처음부터 끝까지 읽고, 누가 누구에게 하는 말인지 묻습니다.</p></li>
+        <li class="o"><span class="dd">화 – 수</span><b>살펴요</b><p>낱말 하나하나를 짚어 보고, 되풀이되는 말을 찾아 표시합니다.</p></li>
+        <li class="i"><span class="dd">목 – 금</span><b>뜻을 찾아요</b><p>앞뒤 흐름 속에서 그 말씀의 의미를 찾습니다. 궁금한 곳은 표시해 둡니다.</p></li>
+        <li class="a"><span class="dd">주말</span><b>삶에 옮겨요</b><p>마음에 남은 한 구절을 붙들고, 작은 실천을 정하고, 함께 기도합니다.</p></li>
+        <li class="c"><span class="dd">주일</span><b>교회에서 나눠요</b><p>찾은 것은 공과에서 나누고, 남은 물음은 설교에서 답을 듣습니다.</p></li>
       </ol>
-      <p class="wk-note">한 주 내내 하나님을 가리키는 말 옆에는 작은 세모(△)를 그려 두었다가, 금요일에 모아 "하나님은 어떤 분인가"를 함께 살핍니다.</p>
+      <p class="wk-note">관찰 → 해석 → 적용. 신학교와 교회에서 오래 가르쳐 온 귀납적 성경연구의 순서를 아이의 눈높이로 따라갑니다.</p>
     </div>
   </div>
 </section>
