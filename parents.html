@@ -246,7 +246,7 @@ section.now{background:var(--wash)}
 </head>
 <body>
 
-<header id="top">
+<header>
   <div class="wrap">
     <a class="brand" href="./" aria-label="토블 홈페이지로"><b>토블</b><span>성경을 톺아보다</span></a>
     <a class="home" href="./">홈페이지로</a>
@@ -393,13 +393,14 @@ section.now{background:var(--wash)}
 </main>
 
 <footer>
-  <div class="wrap"><span>토블 · 성경을 톺아보다</span><a href="#top">맨 위로</a></div>
+  <div class="wrap"><span>토블 · 성경을 톺아보다</span><a href="#" id="toTop">맨 위로</a></div>
 </footer>
 
 <script>
 (function(){
   const h=document.querySelector('header');
   addEventListener('scroll',()=>h.classList.toggle('scrolled',scrollY>8),{passive:true});
+  document.getElementById('toTop').addEventListener('click',e=>{e.preventDefault();scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});
 })();
 </script>
 </body>
