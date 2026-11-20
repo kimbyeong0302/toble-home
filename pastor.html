@@ -110,8 +110,16 @@ h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,4.2vw,44px);l
 .thread .end{fill:var(--olive)}
 
 /* ---------- facts ---------- */
-.facts{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(28px,5vw,64px);align-items:start;margin-top:36px}
+.facts{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(20px,3vw,28px);align-items:stretch;margin-top:36px}
 .bars{display:grid;gap:14px}
+.home-card{background:var(--card);border:1.5px solid var(--olive-2);border-radius:16px;padding:26px 28px 24px}
+.hc-q{font:500 15px/1.4 var(--body);color:var(--soft);margin:0 0 6px}
+.hc-a{display:flex;align-items:baseline;gap:18px;margin:0 0 14px;flex-wrap:wrap}
+.hc-w{font-family:var(--display);font-weight:700;font-size:clamp(64px,9vw,104px);line-height:1;color:var(--olive)}
+.hc-n{font-family:var(--display);font-weight:700;font-size:clamp(34px,4.4vw,48px);line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.hc-n small{font-size:.55em;margin-left:2px}
+.hc-t{margin:0;font-family:var(--serif);font-size:16.5px;line-height:1.75;color:var(--ink)}
+.hc-s{margin:10px 0 0;font-size:13.5px;line-height:1.6;color:var(--muted)}
 .stmt{font-family:var(--display);font-size:clamp(20px,2.4vw,24px);line-height:1.45;margin:0;color:var(--ink)}
 .bars .q{font-family:var(--serif);font-size:15.5px;color:var(--soft);margin:0 0 6px}
 .bar{display:grid;grid-template-columns:7.5em 1fr 3em;gap:12px;align-items:center;font-size:15px}
@@ -315,13 +323,11 @@ footer a{color:var(--olive);text-decoration:none}
     <p class="k">사역자들이 이미 알고 있는 것</p>
     <h2>생각은 이미 같습니다.<br>빠진 것은 가정과 교회를 잇는 길입니다</h2>
     <div class="facts">
-      <div class="bars">
-        <p class="stmt">"부모가 주체이고,<br>교회는 지원하는 역할"</p>
-        <p class="q">이 문항에 동의한 비율</p>
-        <div class="bar"><span>교회학교 사역자</span><em><i style="width:84%"></i></em><b>84%</b></div>
-        <div class="bar"><span>담임목사</span><em><i style="width:62%"></i></em><b>62%</b></div>
-        <div class="bar"><span>교사</span><em><i style="width:55%"></i></em><b>55%</b></div>
-        <div class="bar"><span>부모</span><em><i style="width:51%"></i></em><b>51%</b></div>
+      <div class="home-card">
+        <p class="hc-q">신앙교육의 주체는 누구인가</p>
+        <p class="hc-a"><span class="hc-w">가정</span><span class="hc-n">84<small>%</small></span></p>
+        <p class="hc-t">교회학교 사역자 84%가 "부모가 주체이고, 교회는 지원하는 역할"이라고 답했습니다.</p>
+        <p class="hc-s">담임목사 62%, 교사 55%, 부모 51%도 같은 문항에 동의했습니다.</p>
       </div>
       <div class="weak">
         <p class="rank">1순위</p>
