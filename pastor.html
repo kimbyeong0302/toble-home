@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>교역자님께 · 토블</title>
+<meta name="description" content="공과가 먼저, 설교는 그다음. 한 주 동안 같은 말씀을 연구하고 온 아이들과 함께하는 주일. 토블을 교회학교 공과 교재로 쓰는 방법.">
+<meta name="theme-color" content="#24251f">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://toble.kr/pastor.html">
+<meta property="og:title" content="교역자님께 · 토블">
+<meta property="og:description" content="설교 먼저, 공과는 나중? 아니요. 공과가 먼저예요.">
+<meta property="og:image" content="https://toble.kr/assets/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: one calm column that reads top to bottom — a dark opening that breaks the habit,
+   then light paper sections that walk through one week, the facts, the fence and an invitation. */
+:root{
+  color-scheme:light;
+  --paper:#fafaf5;
+  --paper-2:#f2f2ea;
+  --ink:#24251f;
+  --soft:#5b5c52;
+  --muted:#8b8c80;
+  --olive:#5f6d2c;
+  --olive-2:#8a9653;
+  --olive-wash:#e7ead9;
+  --line:#e2e2d8;
+  --night:#24251f;
+  --night-soft:#b9baae;
+  --display:"Gowun Batang","Nanum Myeongjo","Apple SD Gothic Neo",serif;
+  --serif:"Noto Serif KR","Gowun Batang","Apple SD Gothic Neo",serif;
+  --body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;line-height:1.75}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--night);z-index:30}
+a{color:inherit}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+p,li{word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty}
+h1,h2,h3{text-wrap:balance;word-break:keep-all}
+.sen{display:block}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(36,37,31,.92);backdrop-filter:saturate(1.2) blur(6px);-webkit-backdrop-filter:saturate(1.2) blur(6px)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px}
+.brand{display:flex;align-items:baseline;gap:10px;text-decoration:none;color:var(--paper);font-family:var(--display)}
+.brand b{font-size:20px}
+.brand span{font-size:12.5px;color:var(--night-soft)}
+.top a.home{font:500 13px/1 var(--body);color:var(--paper);text-decoration:none;border:1px solid rgba(250,250,245,.35);padding:8px 12px;border-radius:999px}
+
+/* opening */
+.hero{background:var(--night);color:var(--paper)}
+.hero .wrap{padding-block:clamp(56px,10vw,110px) clamp(56px,9vw,96px)}
+.eyebrow{font:500 12.5px/1.4 var(--body);letter-spacing:.16em;color:var(--olive-2);margin:0 0 18px}
+.hero .ask{font-family:var(--serif);font-size:clamp(20px,3vw,26px);color:var(--night-soft);margin:0 0 10px}
+.hero .ask q{quotes:"“" "”"}
+.hero .no{font-family:var(--display);font-weight:700;font-size:clamp(58px,13vw,112px);line-height:1;margin:0 0 18px;color:var(--paper)}
+.hero .no em{font-style:normal;color:#a9b768}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,5vw,44px);line-height:1.3;margin:0 0 22px}
+.hero .lead{font-family:var(--serif);font-size:clamp(16px,2vw,19px);color:#dcdcd2;margin:0;max-width:34em}
+
+/* sections */
+section.band{padding-block:clamp(52px,8vw,88px)}
+section.band + section.band{border-top:1px solid var(--line)}
+section.alt{background:var(--paper-2)}
+.kicker{font:500 12.5px/1.4 var(--body);letter-spacing:.16em;color:var(--olive);margin:0 0 12px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(26px,4vw,36px);line-height:1.35;margin:0 0 18px}
+.body p{font-size:16.5px;color:var(--soft);margin:0 0 14px;max-width:36em}
+.body p.big{font-family:var(--serif);font-size:clamp(18px,2.3vw,21px);color:var(--ink)}
+
+/* before / after */
+.swap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:26px 0 6px}
+.swap > div{border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;background:var(--paper);min-width:0}
+.swap .now{opacity:.85}
+.swap .tob{border-color:var(--olive-2);background:#fff}
+.swap h3{font:700 14px/1.3 var(--body);margin:0 0 12px;color:var(--muted);letter-spacing:.04em}
+.swap .tob h3{color:var(--olive)}
+.swap ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.swap li{display:flex;gap:10px;align-items:center;font-size:15.5px}
+.swap li i{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 12px/1 var(--body);font-style:normal;background:var(--paper-2);color:var(--soft)}
+.swap .tob li i{background:var(--olive);color:var(--paper)}
+.swap small{display:block;margin-top:12px;font-size:13px;color:var(--muted);line-height:1.6}
+
+/* the week */
+.week{list-style:none;margin:28px 0 0;padding:0;position:relative;display:grid;gap:0}
+.week li{position:relative;display:grid;grid-template-columns:56px 1fr;gap:16px;padding-bottom:28px}
+.week li:last-child{padding-bottom:0}
+.week li::before{content:"";position:absolute;left:27px;top:44px;bottom:0;width:2px;background:var(--olive-wash)}
+.week li:last-child::before{display:none}
+.week .day{width:56px;height:56px;border-radius:50%;background:var(--olive-wash);color:var(--olive);display:grid;place-items:center;text-align:center;font:700 13px/1.15 var(--body)}
+.week li.sun .day{background:var(--olive);color:var(--paper)}
+.week h3{font-family:var(--display);font-size:clamp(20px,2.6vw,23px);margin:12px 0 6px}
+.week p{font-size:16px;color:var(--soft);margin:0;max-width:34em}
+.week .tag{display:inline-block;margin-top:8px;font:500 12.5px/1 var(--body);padding:6px 10px;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--soft)}
+
+/* the relief */
+.relief{margin-top:8px;display:grid;gap:14px}
+.quote{font-family:var(--display);font-size:clamp(24px,3.6vw,32px);line-height:1.4;margin:0 0 6px;color:var(--ink)}
+.quote s{text-decoration-thickness:2px;text-decoration-color:var(--olive-2);color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pair div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;min-width:0}
+.pair b{display:block;font:700 13px/1.3 var(--body);color:var(--olive);letter-spacing:.04em;margin-bottom:6px}
+.pair span{font-family:var(--serif);font-size:17px;line-height:1.6}
+
+/* option */
+.option{margin-top:22px;border:1px dashed var(--olive-2);border-radius:14px;padding:18px 20px;background:var(--paper)}
+.option b{display:inline-block;font:700 12px/1 var(--body);letter-spacing:.06em;color:var(--olive);background:var(--olive-wash);padding:6px 9px;border-radius:999px;margin-bottom:10px}
+.option p{margin:0;font-size:15.5px;color:var(--soft)}
+
+/* fact */
+.fact{display:grid;gap:22px;margin-top:24px}
+.stat{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.stat .n{font-family:var(--display);font-weight:700;font-size:clamp(52px,9vw,76px);line-height:1;color:var(--olive)}
+.stat .n small{font-size:.45em}
+.stat p{margin:0;font-size:16.5px;color:var(--ink)}
+.bar{height:10px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--olive);border-radius:999px}
+.bars{display:grid;gap:10px;margin-top:6px}
+.bars div{display:grid;grid-template-columns:7.5em 1fr 3em;gap:10px;align-items:center;font-size:14px;color:var(--soft)}
+.bars div span{white-space:nowrap}
+.bars div b{font-weight:500;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+.bars div .bar{margin:0}
+.bars div.me .bar i{background:var(--olive)}
+.bars div:not(.me) .bar i{background:var(--olive-2);opacity:.55}
+.src{font-size:12.5px;color:var(--muted);line-height:1.6;margin:6px 0 0}
+
+/* fence */
+.fence{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:10px}
+.fence li{position:relative;padding-left:20px;font-size:16px;color:var(--ink)}
+.fence li::before{content:"";position:absolute;left:0;top:.75em;width:10px;height:2px;background:var(--olive)}
+
+/* invitation */
+.invite{background:var(--night);color:var(--paper)}
+.invite h2{color:var(--paper)}
+.invite p{color:#dcdcd2;font-size:16.5px;margin:0 0 12px;max-width:34em}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:500 15px/1 var(--body);padding:14px 20px;border-radius:999px;text-decoration:none;border:1px solid var(--olive-2);color:var(--paper)}
+.btn.solid{background:#a9b768;border-color:#a9b768;color:var(--night)}
+.ph{display:inline-block;font-size:12.5px;color:var(--night-soft);border:1px dashed var(--night-soft);border-radius:8px;padding:5px 9px;margin-top:14px}
+footer{background:var(--night);color:var(--night-soft);font-size:12.5px;border-top:1px solid #3a3b33}
+footer .wrap{padding-block:22px calc(22px + env(safe-area-inset-bottom,0px))}
+a:focus-visible,.btn:focus-visible{outline:2px solid #a9b768;outline-offset:3px;border-radius:999px}
+
+@media (max-width:620px){
+  .swap,.pair{grid-template-columns:1fr}
+  .stat{grid-template-columns:1fr;gap:8px}
+  .bars div{grid-template-columns:7.6em 1fr 2.8em;font-size:13px}
+  .brand span{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./"><b>토블</b><span>성경을 톺아보다</span></a>
+    <a class="home" href="./">홈페이지로</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">교역자님께</p>
+    <p class="ask"><q>설교 먼저, 공과는 나중.</q></p>
+    <p class="no"><em>아니요.</em></p>
+    <h1>공과가 먼저예요.</h1>
+    <p class="lead"><span class="sen">토블을 공과 교재로 쓰면, 주일의 순서를 바꿀 분명한 이유가 생깁니다.</span><span class="sen">아이들이 이미 한 주 동안 그 말씀을 연구하고 오기 때문입니다.</span></p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap body">
+    <p class="kicker">왜 지금은 설교가 먼저일까요</p>
+    <h2>그 순서에는<br>이유가 있었습니다</h2>
+    <p class="big"><span class="sen">설교 뒤에 공과를 해 온 것은, 아이들이 말씀을 보지 않고 교회에 오기 때문입니다.</span></p>
+    <p><span class="sen">같은 본문으로 공과를 하려면, 그날 설교로 본문을 먼저 들려줄 수밖에 없었습니다.</span><span class="sen">토블은 바로 그 전제를 바꿉니다.</span><span class="sen">일주일 동안 같은 말씀을 연구하고 온 아이들은, 설교를 듣기 전에 이미 나눌 것을 가지고 있습니다.</span></p>
+    <div class="swap" aria-label="지금의 주일과 토블을 쓰는 주일 비교">
+      <div class="now">
+        <h3>지금의 주일</h3>
+        <ol><li><i>1</i>설교로 본문을 처음 들어요</li><li><i>2</i>공과로 다시 정리해요</li></ol>
+        <small>본문을 처음 만나는 날이 주일이라, 공과는 설교를 되짚는 시간이 됩니다.</small>
+      </div>
+      <div class="tob">
+        <h3>토블을 쓰는 주일</h3>
+        <ol><li><i>1</i>공과에서 찾은 것을 나눠요</li><li><i>2</i>설교로 함께 풀어요</li></ol>
+        <small>본문은 이미 한 주 동안 만났습니다. 주일은 그 열매를 나누고 푸는 날이 됩니다.</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band alt">
+  <div class="wrap body">
+    <p class="kicker">한 주의 흐름</p>
+    <h2>한 말씀으로 이어지는<br>일주일</h2>
+    <ol class="week">
+      <li><span class="day">월<br>~토</span><div><h3>주중 · 집에서 연구해요</h3><p><span class="sen">아이들이 한 말씀을 일주일 동안 연구하고 묵상합니다.</span><span class="sen">하루 10분에서 시작해, 익숙해지면 더 깊이 들어갑니다.</span></p><span class="tag">관찰 · 해석 · 적용</span></div></li>
+      <li class="sun"><span class="day">주일<br>①</span><div><h3>공과 먼저 · 찾은 것을 나눠요</h3><p><span class="sen">각자 한 주 동안 찾은 것을 가져오니 나눔이 풍성합니다.</span><span class="sen">교사는 답을 알려 주는 사람이 아니라, 아이들이 찾은 것을 이어 주는 사람이 됩니다.</span></p></div></li>
+      <li class="sun"><span class="day">주일<br>②</span><div><h3>설교 · 아이들의 물음을 풀어요</h3><p><span class="sen">공과에서 나온 모르는 부분과 아이들이 꽂아 둔 깃발(궁금한 곳)을 교역자가 풀어 줍니다.</span><span class="sen">아이들이 한 주 내내 궁금해하던 것이라 귀를 기울입니다.</span></p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap body">
+    <p class="kicker">교역자에게 남는 것</p>
+    <p class="quote"><s>"이번 주 설교 뭐 하지?"</s><br>그 고민이 사라집니다.</p>
+    <div class="pair">
+      <div><b>본문은</b><span>이미 정해져 있습니다.</span></div>
+      <div><b>질문은</b><span>아이들이 가져옵니다.</span></div>
+    </div>
+    <p style="margin-top:18px"><span class="sen">무엇을 설교할지 찾아 헤매는 대신, 아이들이 실제로 붙들고 씨름한 물음에서 설교를 시작할 수 있습니다.</span></p>
+    <div class="option">
+      <b>선택 사항</b>
+      <p><span class="sen">토요일까지 아이들의 깃발을 미리 받아 보면, 주일 설교 준비가 한결 쉬워집니다.</span><span class="sen">받는 방법은 시범 운영 교회와 함께 다듬어 가려고 합니다.</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="band alt">
+  <div class="wrap body">
+    <p class="kicker">사역자들이 이미 알고 있는 것</p>
+    <h2>문제는 생각이 아니라<br>연결입니다</h2>
+    <div class="fact">
+      <div class="stat">
+        <div class="n">84<small>%</small></div>
+        <p><span class="sen">교회학교 담당 사역자의 84%가 '부모가 주체이고 교회는 지원하는 역할'이라는 문항에 동의했습니다.</span></p>
+      </div>
+      <div>
+        <div class="bars" aria-label="'부모가 주체이고 교회는 지원하는 역할'에 동의한 비율">
+          <div class="me"><span>교회학교 사역자</span><div class="bar"><i style="width:84%"></i></div><b>84%</b></div>
+          <div><span>담임목사</span><div class="bar"><i style="width:62%"></i></div><b>62%</b></div>
+          <div><span>교사</span><div class="bar"><i style="width:55%"></i></div><b>55%</b></div>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="n">1<small>순위</small></div>
+        <p><span class="sen">그런데 교회학교 시스템에서 가장 취약한 영역을 묻자, 사역자와 담임목사 모두 '가정과 교회와의 연계 활동'을 1순위로 꼽았습니다(각 30%).</span></p>
+      </div>
+      <p class="src">출처: 목회데이터연구소 · (사)꿈이 있는 미래, 「한국교회 다음세대 트렌드 2026」(2026.5.20) — 목회데이터연구소 넘버즈 342호 소개 글(2026.7.14)</p>
+    </div>
+    <p style="margin-top:22px" class="big"><span class="sen">토블은 가정의 한 주와 교회의 주일을 같은 본문으로 잇습니다.</span></p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap body">
+    <p class="kicker">안심하고 맡기실 수 있도록</p>
+    <h2>교회의 가르침 안에서<br>쓰이는 교재</h2>
+    <ul class="fence">
+      <li>사도신경을 고백하며, 성경 66권을 오류가 없는 하나님의 말씀으로 믿습니다.</li>
+      <li>본문의 뜻은 그 책의 앞뒤 문맥 안에서만 살피고, 다른 구절을 끌어와 끼워 맞추지 않습니다.</li>
+      <li>출처가 분명한 주석과 연구서만 참고하고, 이단 단체의 자료는 쓰지 않습니다.</li>
+      <li>책은 답을 대신 주지 않습니다. 아이들의 물음은 교회와 담당 교역자에게로 향하게 합니다.</li>
+    </ul>
+    <p style="margin-top:18px"><a href="./" style="color:var(--olive)">신앙고백과 토블이 지키는 약속 전체 보기 →</a></p>
+  </div>
+</section>
+
+<section class="band invite">
+  <div class="wrap">
+    <p class="eyebrow">함께해 주세요</p>
+    <h2>교회 시범 운영을<br>함께할 교회를 찾습니다</h2>
+    <p><span class="sen">2027년 2월, 교회학교 몇 곳과 함께 시범 운영을 시작합니다.</span><span class="sen">공과 순서를 바꿔 보는 일부터, 아이들의 깃발을 설교로 잇는 방법까지 함께 다듬어 가고 싶습니다.</span></p>
+    <div class="btns">
+      <a class="btn solid" href="./">토블 홈페이지 둘러보기</a>
+    </div>
+    <span class="ph">교회 시범 운영 문의 연결 예정</span>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">토블: 성경을 톺아보다 · 김병호 · 기독교대한성결교회</div>
+</footer>
+
+</body>
+</html>
